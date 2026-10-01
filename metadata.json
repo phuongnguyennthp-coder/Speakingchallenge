@@ -1,0 +1,6 @@
+{
+  "name": "E-SMART ENGLISH KIDS – SPEAKING CHALLENGE",
+  "description": "Interactive English Speaking Challenge for Vietnamese Grade 5 students with guided video, mindmap, speaking toolbox, AI practice, and supportive coaching.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

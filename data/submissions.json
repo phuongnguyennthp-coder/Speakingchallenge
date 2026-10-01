@@ -1,0 +1,62 @@
+[
+  {
+    "id": "sub_1727712000000_grade5a",
+    "unitId": "unit-5",
+    "unitNumber": "Unit 5",
+    "unitTitle": "Our Future Jobs",
+    "studentName": "Nguyễn Hoàng Nam",
+    "studentClass": "5A1",
+    "schoolName": "Tiểu học Kim Đồng",
+    "transcript": "Hello teacher and everyone! My name is Nam. In the future, I want to be an astronaut because I like studying planets and flying in space. I will work hard and learn English every day. Thank you for listening!",
+    "audioUrl": "",
+    "durationSeconds": 38,
+    "rubricFeedback": {
+      "pronunciation": "Phát âm rõ ràng các âm /s/, /t/ và từ astronaut.",
+      "fluency": "Nói trôi chảy, nhịp điệu tự nhiên và không ngập ngừng.",
+      "vocabulary": "Sử dụng chính xác từ vựng chủ đề nghề nghiệp và vũ trụ.",
+      "grammar": "Cấu trúc câu 'I want to be... because...' rất chuẩn xác.",
+      "contentDevelopment": "Bài nói có đủ Mở bài, Thân bài và Kết bài mạch lạc."
+    },
+    "strengths": [
+      "Tự tin giới thiệu bản thân và ước mơ nghề nghiệp",
+      "Phát âm từ vựng khó 'astronaut' rất tốt",
+      "Có lời chào và cảm ơn cuối bài rất lịch sự"
+    ],
+    "nextTimeYouCanTry": [
+      "Có thể bổ sung thêm nơi làm việc (NASA / Space station)",
+      "Ngắt nghỉ dài hơn một chút sau từ nối 'because'"
+    ],
+    "teacherFeedback": "Cô khen Nam phát âm rất tiến bộ, giọng nói to rõ và rất tự tin! Tiếp tục phát huy nhé!",
+    "teacherRating": 5,
+    "submittedAt": "2026-09-30T14:20:00.000Z"
+  },
+  {
+    "id": "sub_1727715600000_grade5b",
+    "unitId": "unit-8",
+    "unitNumber": "Unit 8",
+    "unitTitle": "My Favourite Story",
+    "studentName": "Trần Mai Anh",
+    "studentClass": "5A2",
+    "schoolName": "Tiểu học Lê Quý Đôn",
+    "transcript": "Good morning teacher! Today I want to tell you about my favourite story. It is The Fox and the Crow. The crow has some cheese, and the fox is very clever. I like this story because it teaches me a good lesson.",
+    "audioUrl": "",
+    "durationSeconds": 42,
+    "rubricFeedback": {
+      "pronunciation": "Giọng đọc truyền cảm, các phụ âm cuối rõ nét.",
+      "fluency": "Tốc độ nói đều đặn, ngắt nghỉ theo từng câu.",
+      "vocabulary": "Nhiều từ hay: clever, cheese, lesson.",
+      "grammar": "Sử dụng đúng thì hiện tại đơn giản.",
+      "contentDevelopment": "Tóm tắt được nhân vật chính và bài học đạo đức."
+    },
+    "strengths": [
+      "Ngữ điệu tự nhiên, biểu cảm tốt khi kể chuyện",
+      "Vốn từ phong phú về truyện cổ tích"
+    ],
+    "nextTimeYouCanTry": [
+      "Thử dùng thêm liên từ so, but để câu văn phong phú hơn"
+    ],
+    "teacherFeedback": "Mai Anh kể chuyện rất hay và cuốn hút! Cô cho em 5 sao nhé!",
+    "teacherRating": 5,
+    "submittedAt": "2026-09-30T15:10:00.000Z"
+  }
+]
