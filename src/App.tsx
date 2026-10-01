@@ -10,6 +10,8 @@ import { Section3Expressions } from './components/sections/Section3Expressions';
 import { Section4Practice } from './components/sections/Section4Practice';
 import { Section5Challenge } from './components/sections/Section5Challenge';
 import { Section6Feedback } from './components/sections/Section6Feedback';
+import { AdminPinModal } from './components/AdminPinModal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { DEFAULT_UNITS } from './data/defaultUnits';
 import { TeacherMaterial, BackgroundThemeType } from './types';
 import { sounds } from './utils/soundEffects';
@@ -23,6 +25,7 @@ export default function App() {
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState<boolean>(false);
   const [isSubmissionsModalOpen, setIsSubmissionsModalOpen] = useState<boolean>(false);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState<boolean>(false);
+  const [isAdminPinModalOpen, setIsAdminPinModalOpen] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   // Auto-check API Key on initial mount per AI_INSTRUCTIONS.md
@@ -200,6 +203,19 @@ export default function App() {
     setChallengeTranscript('');
     setChallengeAudioUrl('');
     setHasFinishedLesson(false);
+
+    if (typeof window !== 'undefined') {
+      const mode = isStudentView ? 'student' : 'teacher';
+      window.history.pushState({}, '', `${window.location.pathname}?unit=${unit.id}&mode=${mode}`);
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    setViewMode('dashboard');
+    setIsStudentMode(false);
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', `${window.location.pathname}?mode=teacher`);
+    }
   };
 
   const handleCreateNewUnit = () => {
@@ -270,11 +286,35 @@ export default function App() {
         {
           levelNumber: 1,
           levelName: 'Recognition',
-          badgeTitle: 'Level 1: Recognition',
+          badgeTitle: 'Level 1: Nhận diện & Lặp lại',
           buddyPrompt: 'Do you like learning English speaking?',
           options: ['Yes, I do', 'No, I do not'],
           sampleStudentAnswer: 'Yes, I do',
           hint: 'Say Yes, I do!',
+        },
+        {
+          levelNumber: 2,
+          levelName: 'Short Answers',
+          badgeTitle: 'Level 2: Trả lời ngắn',
+          buddyPrompt: 'What is your favourite topic to talk about?',
+          sampleStudentAnswer: 'My favourite topic is my dream job.',
+          hint: 'Answer with your favourite topic',
+        },
+        {
+          levelNumber: 3,
+          levelName: 'Extended Answers',
+          badgeTitle: 'Level 3: Trả lời mở rộng',
+          buddyPrompt: 'Why do you like this topic? Can you give reasons?',
+          sampleStudentAnswer: 'Because it is very interesting and I can help other people.',
+          hint: 'Share reasons why you like it',
+        },
+        {
+          levelNumber: 4,
+          levelName: 'Personal Opinion',
+          badgeTitle: 'Level 4: Bày tỏ ý kiến cá nhân',
+          buddyPrompt: 'What will you do to make your dream come true?',
+          sampleStudentAnswer: 'I will study hard and practice English every day.',
+          hint: 'Share your plans and determination',
         },
       ],
       modelAnswer: 'Hello everyone! Today I want to practice speaking English. Thank you for listening!',
@@ -327,154 +367,171 @@ export default function App() {
   };
 
   return (
-    <div
-      style={getBackgroundStyle()}
-      className={`min-h-screen flex flex-col font-['Nunito',sans-serif] bg-gradient-to-b ${getBackgroundGradientClass(
-        currentMaterial.backgroundTheme
-      )} transition-colors duration-300 relative`}
-    >
-      {/* Semi-transparent backdrop overlay if custom background image is active */}
-      {currentMaterial.backgroundType === 'upload' && currentMaterial.customBackgroundUrl && (
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] pointer-events-none z-0" />
-      )}
-
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* VIEW 1: TEACHER DASHBOARD HUB */}
-        {viewMode === 'dashboard' && !isStudentMode ? (
-          <main className="flex-1">
-            <TeacherDashboard
-              units={units}
-              onSelectUnit={handleSelectUnitFromDashboard}
-              onEditUnit={(u) => {
-                setCurrentMaterial(u);
-                setIsTeacherModalOpen(true);
-              }}
-              onCreateUnit={handleCreateNewUnit}
-              onDeleteUnit={handleDeleteUnit}
-              onOpenSubmissions={() => setIsSubmissionsModalOpen(true)}
-              onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-            />
-          </main>
-        ) : (
-          /* VIEW 2: INTERACTIVE 6-STEP LESSON PLAYER (STUDENT OR TEACHER VIEW) */
-          <>
-            {/* Sticky Progress Header */}
-            <HeaderProgress
-              currentStep={currentStep}
-              unlockedStep={unlockedStep}
-              onSelectStep={(step) => {
-                setCurrentStep(step);
-                setHasFinishedLesson(false);
-              }}
-              unitNumber={currentMaterial.unitNumber}
-              unitTitle={currentMaterial.unitTitle}
-              onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
-              soundEnabled={soundEnabled}
-              onToggleSound={handleToggleSound}
-              isStudentMode={isStudentMode}
-              onBackToDashboard={() => setViewMode('dashboard')}
-              onQuickShare={() => setIsTeacherModalOpen(true)}
-              onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-            />
-
-            {/* Main Content Sections */}
-            <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
-              {currentStep === 1 && (
-                <Section1Video
-                  material={currentMaterial}
-                  onCompleteSection={handleSection1Complete}
-                  onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
-                  isStudentMode={isStudentMode}
-                />
-              )}
-
-              {currentStep === 2 && (
-                <Section2Mindmap
-                  material={currentMaterial}
-                  onCompleteSection={handleSection2Complete}
-                  onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
-                  isStudentMode={isStudentMode}
-                />
-              )}
-
-              {currentStep === 3 && (
-                <Section3Expressions
-                  material={currentMaterial}
-                  onCompleteSection={handleSection3Complete}
-                />
-              )}
-
-              {currentStep === 4 && (
-                <Section4Practice
-                  material={currentMaterial}
-                  onCompleteSection={handleSection4Complete}
-                />
-              )}
-
-              {currentStep === 5 && (
-                <Section5Challenge
-                  material={currentMaterial}
-                  onFinishChallenge={handleSection5Complete}
-                  savedTranscript={challengeTranscript}
-                  savedAudioUrl={challengeAudioUrl}
-                />
-              )}
-
-              {currentStep === 6 && (
-                <Section6Feedback
-                  material={currentMaterial}
-                  studentTranscript={challengeTranscript}
-                  studentAudioUrl={challengeAudioUrl}
-                  durationSeconds={challengeDuration}
-                  onTryAgainYes={handleTryAgainYes}
-                  onTryAgainNo={handleTryAgainNo}
-                  hasFinishedLesson={hasFinishedLesson}
-                />
-              )}
-            </main>
-          </>
+    <ErrorBoundary onReset={handleBackToDashboard}>
+      <div
+        style={getBackgroundStyle()}
+        className={`min-h-screen flex flex-col font-['Nunito',sans-serif] bg-gradient-to-b ${getBackgroundGradientClass(
+          currentMaterial.backgroundTheme
+        )} transition-colors duration-300 relative`}
+      >
+        {/* Semi-transparent backdrop overlay if custom background image is active */}
+        {currentMaterial.backgroundType === 'upload' && currentMaterial.customBackgroundUrl && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] pointer-events-none z-0" />
         )}
 
-        {/* Teacher Setup Modal */}
-        <TeacherSetupModal
-          isOpen={isTeacherModalOpen}
-          onClose={() => setIsTeacherModalOpen(false)}
-          currentMaterial={currentMaterial}
-          onSaveMaterial={handleSaveMaterial}
-        />
+        <div className="relative z-10 flex flex-col min-h-screen">
+          {/* VIEW 1: TEACHER DASHBOARD HUB */}
+          {viewMode === 'dashboard' && !isStudentMode ? (
+            <main className="flex-1">
+              <TeacherDashboard
+                units={units}
+                onSelectUnit={handleSelectUnitFromDashboard}
+                onEditUnit={(u) => {
+                  setCurrentMaterial(u);
+                  setIsTeacherModalOpen(true);
+                }}
+                onCreateUnit={handleCreateNewUnit}
+                onDeleteUnit={handleDeleteUnit}
+                onOpenSubmissions={() => setIsSubmissionsModalOpen(true)}
+                onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+              />
+            </main>
+          ) : (
+            /* VIEW 2: INTERACTIVE 6-STEP LESSON PLAYER (STUDENT OR TEACHER VIEW) */
+            <>
+              {/* Sticky Progress Header */}
+              <HeaderProgress
+                currentStep={currentStep}
+                unlockedStep={unlockedStep}
+                onSelectStep={(step) => {
+                  setCurrentStep(step);
+                  setHasFinishedLesson(false);
+                }}
+                unitNumber={currentMaterial.unitNumber}
+                unitTitle={currentMaterial.unitTitle}
+                onOpenTeacherModal={() => setIsTeacherModalOpen(true)}
+                soundEnabled={soundEnabled}
+                onToggleSound={handleToggleSound}
+                isStudentMode={isStudentMode}
+                onBackToDashboard={handleBackToDashboard}
+                onQuickShare={() => setIsTeacherModalOpen(true)}
+                onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+                onRequestAdminLogin={() => setIsAdminPinModalOpen(true)}
+              />
 
-        {/* Submissions & 5 Rubrics Radar Analytics Modal */}
-        <SubmissionsAnalyticsModal
-          isOpen={isSubmissionsModalOpen}
-          onClose={() => setIsSubmissionsModalOpen(false)}
-          units={units}
-          selectedUnitId={currentMaterial.id}
-        />
+              {/* Main Content Sections */}
+              <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
+                {currentStep === 1 && (
+                  <Section1Video
+                    material={currentMaterial}
+                    onCompleteSection={handleSection1Complete}
+                    onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
+                    isStudentMode={isStudentMode}
+                  />
+                )}
 
-        {/* Gemini API Key & Model Configuration Modal per AI_INSTRUCTIONS.md */}
-        <ApiKeyModal
-          isOpen={isApiKeyModalOpen}
-          onClose={() => setIsApiKeyModalOpen(false)}
-          isMandatory={!hasValidApiKey()}
-        />
+                {currentStep === 2 && (
+                  <Section2Mindmap
+                    material={currentMaterial}
+                    onCompleteSection={handleSection2Complete}
+                    onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
+                    isStudentMode={isStudentMode}
+                  />
+                )}
 
-        {/* Footer with "Designed by Tím" */}
-        <footer className="mt-auto border-t border-amber-100 bg-white/85 backdrop-blur-xs py-3.5 text-center text-xs text-slate-500 font-semibold">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>
-              🎓 <strong>E-SMART ENGLISH KIDS</strong> • Tiếng Anh 5 Global Success (General Education Curriculum 2018)
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-black tracking-wide border border-pink-200">
-                Designed by Tím
+                {currentStep === 3 && (
+                  <Section3Expressions
+                    material={currentMaterial}
+                    onCompleteSection={handleSection3Complete}
+                  />
+                )}
+
+                {currentStep === 4 && (
+                  <Section4Practice
+                    material={currentMaterial}
+                    onCompleteSection={handleSection4Complete}
+                  />
+                )}
+
+                {currentStep === 5 && (
+                  <Section5Challenge
+                    material={currentMaterial}
+                    onFinishChallenge={handleSection5Complete}
+                    savedTranscript={challengeTranscript}
+                    savedAudioUrl={challengeAudioUrl}
+                  />
+                )}
+
+                {currentStep === 6 && (
+                  <Section6Feedback
+                    material={currentMaterial}
+                    studentTranscript={challengeTranscript}
+                    studentAudioUrl={challengeAudioUrl}
+                    durationSeconds={challengeDuration}
+                    onTryAgainYes={handleTryAgainYes}
+                    onTryAgainNo={handleTryAgainNo}
+                    hasFinishedLesson={hasFinishedLesson}
+                  />
+                )}
+              </main>
+            </>
+          )}
+
+          {/* Teacher Setup Modal */}
+          <TeacherSetupModal
+            isOpen={isTeacherModalOpen}
+            onClose={() => setIsTeacherModalOpen(false)}
+            currentMaterial={currentMaterial}
+            onSaveMaterial={handleSaveMaterial}
+          />
+
+          {/* Admin PIN Verification Modal for Student View */}
+          <AdminPinModal
+            isOpen={isAdminPinModalOpen}
+            onClose={() => setIsAdminPinModalOpen(false)}
+            onUnlockSuccess={() => {
+              setIsStudentMode(false);
+              setViewMode('dashboard');
+              setIsAdminPinModalOpen(false);
+              if (typeof window !== 'undefined') {
+                window.history.pushState({}, '', `${window.location.pathname}?unit=${currentMaterial.id}&mode=teacher`);
+              }
+            }}
+          />
+
+          {/* Submissions & 5 Rubrics Radar Analytics Modal */}
+          <SubmissionsAnalyticsModal
+            isOpen={isSubmissionsModalOpen}
+            onClose={() => setIsSubmissionsModalOpen(false)}
+            units={units}
+            selectedUnitId={currentMaterial.id}
+          />
+
+          {/* Gemini API Key & Model Configuration Modal per AI_INSTRUCTIONS.md */}
+          <ApiKeyModal
+            isOpen={isApiKeyModalOpen}
+            onClose={() => setIsApiKeyModalOpen(false)}
+            isMandatory={!hasValidApiKey()}
+          />
+
+          {/* Footer with "Designed by Tím" */}
+          <footer className="mt-auto border-t border-amber-100 bg-white/85 backdrop-blur-xs py-3.5 text-center text-xs text-slate-500 font-semibold">
+            <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <span>
+                🎓 <strong>E-SMART ENGLISH KIDS</strong> • Tiếng Anh 5 Global Success (General Education Curriculum 2018)
               </span>
-              <span className="text-purple-600 font-bold hidden sm:inline">
-                • Speaking Confidence for Kids
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-black tracking-wide border border-pink-200">
+                  Designed by Tím
+                </span>
+                <span className="text-purple-600 font-bold hidden sm:inline">
+                  • Speaking Confidence for Kids
+                </span>
+              </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
