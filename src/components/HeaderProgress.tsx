@@ -27,6 +27,7 @@ interface HeaderProgressProps {
   onBackToDashboard?: () => void;
   onQuickShare?: () => void;
   onOpenApiKeyModal?: () => void;
+  onRequestAdminLogin?: () => void;
 }
 
 const STEP_NAMES = [
@@ -51,6 +52,7 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
   onBackToDashboard,
   onQuickShare,
   onOpenApiKeyModal,
+  onRequestAdminLogin,
 }) => {
   const percent = Math.round((currentStep / 6) * 100);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
@@ -195,6 +197,19 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
                   </button>
                 )}
               </div>
+            )}
+
+            {/* ADMIN ACCESS BUTTON FOR TEACHER ON STUDENT SCREEN (PROTECTED BY PIN) */}
+            {isStudentMode && onRequestAdminLogin && (
+              <button
+                onClick={onRequestAdminLogin}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 border-2 border-purple-300 text-purple-900 text-xs font-black transition-all shadow-xs cursor-pointer active:scale-95"
+                title="Dành cho Giáo viên quay lại trang quản trị (Cần mã PIN)"
+              >
+                <Lock className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                <span className="hidden xs:inline">Dành Cho Giáo Viên</span>
+                <span className="xs:hidden">Admin</span>
+              </button>
             )}
           </div>
         </div>
