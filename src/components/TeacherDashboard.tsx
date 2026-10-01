@@ -129,14 +129,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
         </div>
       </div>
 
-      {/* Stats Bar */}
+      {/* Stats & Security Bar */}
       <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-slate-600 px-1">
         <span>
           Hiện có <strong>{units.length}</strong> bài học Unit trong hệ thống
         </span>
-        <span className="text-purple-600">
-          💡 Học sinh nhận link sẽ chỉ làm đúng Unit được giao và hoàn toàn không thấy trang quản trị của giáo viên.
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="px-2.5 py-1 rounded-xl bg-purple-100 text-purple-900 border border-purple-200">
+            🔒 Mã PIN Admin: <strong>1234</strong>
+          </span>
+          <span className="text-purple-600">
+            💡 Học sinh chỉ làm đúng Unit được giao và không thể vào trang này nếu không có PIN.
+          </span>
+        </div>
       </div>
 
       {/* Units Grid */}
@@ -181,6 +186,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
               {/* Unit Card Actions */}
               <div className="bg-slate-50 p-3.5 border-t border-slate-100 flex flex-col gap-2">
+                {/* Primary Action: Giao Bài Theo Step */}
+                <button
+                  onClick={() => onEditUnit(unit)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+                  title="Giao nhiệm vụ học tập theo từng step (Video, Mindmap, Câu hỏi...)"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>Giao Bài & Tải Học Liệu (Theo Step)</span>
+                </button>
+
                 {/* 1-Click Copy Student Link */}
                 <div className="flex items-center gap-2">
                   <button
@@ -198,14 +213,6 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                         <span>Lấy Link / Heyzine</span>
                       </>
                     )}
-                  </button>
-
-                  <button
-                    onClick={() => onEditUnit(unit)}
-                    className="p-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold transition-all cursor-pointer shadow-xs"
-                    title="Chỉnh sửa bài học"
-                  >
-                    <Edit className="w-4 h-4" />
                   </button>
 
                   <button
