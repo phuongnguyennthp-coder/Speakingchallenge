@@ -11,11 +11,13 @@ import { aiAnalyzeExpression, hasValidApiKey } from '../../utils/geminiClient';
 interface Section3ExpressionsProps {
   material: TeacherMaterial;
   onCompleteSection: () => void;
+  onUnlockNext?: () => void;
 }
 
 export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
   material,
   onCompleteSection,
+  onUnlockNext,
 }) => {
   const expressions = material.usefulExpressions;
   const [selectedExpId, setSelectedExpId] = useState<string>(expressions[0]?.id || '');
@@ -74,6 +76,11 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
         [selectedExp.id]: newState,
       }));
 
+      // Unlock Step 4 immediately so header navigation and next step are unblocked
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
+
       // Read praise
       speechService.speak(`${data.praise || 'Wonderful pronunciation!'} ${data.encouragingComment || ''}`);
     } catch (err) {
@@ -92,6 +99,9 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
         ...prev,
         [selectedExp.id]: fallback,
       }));
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
       speechService.speak('Wonderful pronunciation! Excellent effort!');
     } finally {
       setIsAnalyzing(false);
@@ -297,7 +307,7 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
                   <span>Your Recorded Speech: “{currentPractice.studentSpeech}”</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <button
                     onClick={handleTryAgain}
                     className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
@@ -306,16 +316,67 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
                     <span>TRY AGAIN</span>
                   </button>
 
-                  {currentExpIndex < expressions.length - 1 && (
+                  {currentExpIndex < expressions.length - 1 ? (
+                    <>
+                      <button
+                        onClick={handleNextExpression}
+                        className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                      >
+                        <span>Luyện Câu Tiếp Theo</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          sounds.playEncouragementChime();
+                          onCompleteSection();
+                        }}
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-300 font-black text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                      >
+                        <span>Sang Step 4 🚀</span>
+                      </button>
+                    </>
+                  ) : (
                     <button
-                      onClick={handleNextExpression}
-                      className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                      onClick={() => {
+                        sounds.playCelebrationFanfare();
+                        onCompleteSection();
+                      }}
+                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
                     >
-                      <span>Luyện Câu Tiếp Theo</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>Hoàn Thành & Chuyển Sang Step 4 ➡️</span>
                     </button>
                   )}
                 </div>
+              </div>
+
+              {/* Direct Next Step Banner right below feedback */}
+              <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-emerald-200/50 border-2 border-emerald-300">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-2xl shadow-inner shrink-0">
+                    🎉
+                  </div>
+                  <div>
+                    <h5 className="font-black text-sm sm:text-base font-heading">
+                      Tuyệt vời! Em đã hoàn thành phần luyện nói mẫu câu!
+                    </h5>
+                    <p className="text-xs text-emerald-100 font-semibold mt-0.5">
+                      {practicedCount >= expressions.length
+                        ? 'Em đã luyện hết tất cả các mẫu câu! Hãy bước tiếp sang Step 4 để luyện hội thoại với AI Buddy!'
+                        : `Đã hoàn thành ${practicedCount}/${expressions.length} câu. Em có thể bấm nút bên phải để sang Step 4 ngay hoặc chọn câu khác phía trên để luyện thêm.`}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    sounds.playCelebrationFanfare();
+                    onCompleteSection();
+                  }}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-amber-50 text-emerald-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 transition-all shrink-0 hover:scale-105"
+                >
+                  <span>Chuyển Sang Step 4: AI Buddy</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-700" />
+                </button>
               </div>
             </div>
           ) : (
