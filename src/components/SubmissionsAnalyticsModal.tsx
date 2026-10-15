@@ -147,8 +147,9 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
   };
 
   // Unique teacher names and classes from submissions
+  const ALL_DEFAULT_TEACHERS = ['Ms. Hồng Phượng', 'Ms. Thanh Thảo'];
   const uniqueTeachers = Array.from(
-    new Set(submissions.map((s) => s.teacherName).filter(Boolean))
+    new Set([...ALL_DEFAULT_TEACHERS, ...submissions.map((s) => s.teacherName).filter(Boolean)])
   ) as string[];
 
   const uniqueClasses = Array.from(
