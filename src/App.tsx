@@ -11,6 +11,7 @@ import { Section4Practice } from './components/sections/Section4Practice';
 import { Section5Challenge } from './components/sections/Section5Challenge';
 import { Section6Feedback } from './components/sections/Section6Feedback';
 import { AdminPinModal } from './components/AdminPinModal';
+import { StudentWelcomeModal } from './components/StudentWelcomeModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { DEFAULT_UNITS } from './data/defaultUnits';
 import { TeacherMaterial, BackgroundThemeType } from './types';
@@ -26,6 +27,16 @@ export default function App() {
   const [isSubmissionsModalOpen, setIsSubmissionsModalOpen] = useState<boolean>(false);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState<boolean>(false);
   const [isAdminPinModalOpen, setIsAdminPinModalOpen] = useState<boolean>(false);
+  const [isStudentWelcomeOpen, setIsStudentWelcomeOpen] = useState<boolean>(false);
+  const [studentName, setStudentName] = useState<string>(() => localStorage.getItem('esmart_student_name') || '');
+  const [studentClass, setStudentClass] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const c = p.get('class');
+      if (c) return c;
+    }
+    return localStorage.getItem('esmart_student_class') || '5A1';
+  });
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   // Auto-check API Key on initial mount per AI_INSTRUCTIONS.md
@@ -92,6 +103,9 @@ export default function App() {
           setCurrentMaterial(found);
         } else if (allUnits.length > 0) {
           setCurrentMaterial(allUnits[0]);
+        }
+        if (!localStorage.getItem('esmart_student_name')) {
+          setIsStudentWelcomeOpen(true);
         }
       } else if (modeParam === 'teacher') {
         setIsStudentMode(false);
@@ -420,6 +434,9 @@ export default function App() {
                 onQuickShare={() => setIsTeacherModalOpen(true)}
                 onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
                 onRequestAdminLogin={() => setIsAdminPinModalOpen(true)}
+                studentName={studentName}
+                studentClass={studentClass}
+                onOpenStudentProfile={() => setIsStudentWelcomeOpen(true)}
               />
 
               {/* Main Content Sections */}
@@ -486,6 +503,7 @@ export default function App() {
             onClose={() => setIsTeacherModalOpen(false)}
             currentMaterial={currentMaterial}
             onSaveMaterial={handleSaveMaterial}
+            onDeleteUnit={handleDeleteUnit}
           />
 
           {/* Admin PIN Verification Modal for Student View */}
@@ -508,6 +526,20 @@ export default function App() {
             onClose={() => setIsSubmissionsModalOpen(false)}
             units={units}
             selectedUnitId={currentMaterial.id}
+          />
+
+          {/* Student Welcome / Profile Check-in Modal */}
+          <StudentWelcomeModal
+            isOpen={isStudentWelcomeOpen}
+            onClose={() => setIsStudentWelcomeOpen(false)}
+            defaultTeacher={currentMaterial.teacherName || 'Ms. Hồng Phượng'}
+            defaultClass={currentMaterial.targetClass || '5A1'}
+            unitNumber={currentMaterial.unitNumber}
+            unitTitle={currentMaterial.unitTitle}
+            onSaveProfile={(name, sClass, teacher) => {
+              setStudentName(name);
+              setStudentClass(sClass);
+            }}
           />
 
           {/* Gemini API Key & Model Configuration Modal per AI_INSTRUCTIONS.md */}
