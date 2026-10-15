@@ -17,9 +17,11 @@ import {
   User,
   GraduationCap,
   Calendar,
+  Download,
 } from 'lucide-react';
 import { StudentSubmission, TeacherMaterial } from '../types';
 import { sounds } from '../utils/soundEffects';
+import { submissionStore } from '../utils/submissionStore';
 
 interface SubmissionsAnalyticsModalProps {
   isOpen: boolean;
@@ -66,26 +68,37 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
   const fetchSubmissions = async () => {
     setIsLoading(true);
     try {
+      // 1. Load from local submissionStore (guaranteed data & offline support)
+      const localData = submissionStore.getSubmissions(filterUnitId);
+      setSubmissions(localData);
+
+      // Preload feedback states
+      const initialFb: Record<string, string> = {};
+      const initialRating: Record<string, number> = {};
+      localData.forEach((sub: StudentSubmission) => {
+        initialFb[sub.id] = sub.teacherFeedback || '';
+        initialRating[sub.id] = sub.teacherRating || 5;
+      });
+      setEditingFeedback(initialFb);
+      setEditingRating(initialRating);
+
+      // 2. Try fetching from backend API if running and merge
       const url = filterUnitId && filterUnitId !== 'all'
         ? `/api/submissions?unitId=${filterUnitId}`
         : '/api/submissions';
       const res = await fetch(url);
       if (res.ok) {
-        const data = await res.json();
-        setSubmissions(data);
-
-        // Preload feedback states
-        const initialFb: Record<string, string> = {};
-        const initialRating: Record<string, number> = {};
-        data.forEach((sub: StudentSubmission) => {
-          initialFb[sub.id] = sub.teacherFeedback || '';
-          initialRating[sub.id] = sub.teacherRating || 5;
-        });
-        setEditingFeedback(initialFb);
-        setEditingRating(initialRating);
+        const apiData = await res.json();
+        if (Array.isArray(apiData) && apiData.length > 0) {
+          const idMap = new Map<string, StudentSubmission>();
+          localData.forEach((s) => idMap.set(s.id, s));
+          apiData.forEach((s: StudentSubmission) => idMap.set(s.id, s));
+          const merged = Array.from(idMap.values());
+          setSubmissions(merged);
+        }
       }
     } catch (err) {
-      console.warn('Error fetching submissions:', err);
+      console.warn('Backend submissions sync notice:', err);
     } finally {
       setIsLoading(false);
     }
@@ -120,25 +133,29 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
       const feedback = editingFeedback[subId] || '';
       const rating = editingRating[subId] || 5;
 
-      const res = await fetch(`/api/submissions/${subId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          teacherFeedback: feedback,
-          teacherRating: rating,
-        }),
-      });
+      // Always persist to local store
+      submissionStore.updateFeedback(subId, feedback, rating);
 
-      if (res.ok) {
-        sounds.playPraiseChime();
-        setSaveSuccessId(subId);
-        setTimeout(() => setSaveSuccessId(null), 2500);
+      // Also sync to backend API
+      try {
+        await fetch(`/api/submissions/${subId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            teacherFeedback: feedback,
+            teacherRating: rating,
+          }),
+        });
+      } catch (_) {}
 
-        // Update local state
-        setSubmissions((prev) =>
-          prev.map((s) => (s.id === subId ? { ...s, teacherFeedback: feedback, teacherRating: rating } : s))
-        );
-      }
+      sounds.playPraiseChime();
+      setSaveSuccessId(subId);
+      setTimeout(() => setSaveSuccessId(null), 2500);
+
+      // Update local state
+      setSubmissions((prev) =>
+        prev.map((s) => (s.id === subId ? { ...s, teacherFeedback: feedback, teacherRating: rating } : s))
+      );
     } catch (err) {
       console.error('Failed to save teacher feedback:', err);
     } finally {
@@ -152,8 +169,9 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
     new Set([...ALL_DEFAULT_TEACHERS, ...submissions.map((s) => s.teacherName).filter(Boolean)])
   ) as string[];
 
+  const ALL_DEFAULT_CLASSES = ['5/1', '5/3'];
   const uniqueClasses = Array.from(
-    new Set(submissions.map((s) => s.studentClass).filter(Boolean))
+    new Set([...ALL_DEFAULT_CLASSES, ...submissions.map((s) => s.studentClass).filter(Boolean)])
   ) as string[];
 
   // Filtered submissions list
@@ -242,6 +260,20 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
     })
     .join(' ');
 
+  // Executive Class Statistics
+  const hpSubmissions = submissions.filter(
+    (s) => s.teacherName?.includes('Hồng Phượng') || s.studentClass === '5/1'
+  );
+  const ttSubmissions = submissions.filter(
+    (s) => s.teacherName?.includes('Thanh Thảo') || s.studentClass === '5/3'
+  );
+  const avgRating = (
+    submissions.reduce((acc, s) => acc + (s.teacherRating || 5), 0) / (submissions.length || 1)
+  ).toFixed(1);
+  const avgDuration = Math.round(
+    submissions.reduce((acc, s) => acc + (s.durationSeconds || 35), 0) / (submissions.length || 1)
+  );
+
   if (!isOpen) return null;
 
   return (
@@ -276,6 +308,142 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
           </button>
         </div>
 
+        {/* Executive Class Statistics Dashboard (4 KPI Cards) */}
+        <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-pink-50 p-3 sm:p-4 border-b border-purple-100">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+            {/* Card 1: Tổng số bài nộp */}
+            <div
+              onClick={() => {
+                setFilterTeacher('all');
+                setFilterClass('all');
+              }}
+              className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3 ${
+                filterTeacher === 'all' && filterClass === 'all'
+                  ? 'bg-purple-600 text-white border-purple-600 shadow-md ring-2 ring-purple-200'
+                  : 'bg-white text-slate-800 border-purple-200 hover:border-purple-400'
+              }`}
+            >
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black shrink-0 ${
+                  filterTeacher === 'all' && filterClass === 'all' ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700'
+                }`}
+              >
+                📊
+              </div>
+              <div>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider block ${
+                    filterTeacher === 'all' && filterClass === 'all' ? 'text-purple-200' : 'text-slate-500'
+                  }`}
+                >
+                  Tổng bài nộp
+                </span>
+                <span className="text-base sm:text-lg font-black">{submissions.length} Học Sinh</span>
+              </div>
+            </div>
+
+            {/* Card 2: Ms. Hồng Phượng - Lớp 5/1 */}
+            <div
+              onClick={() => {
+                setFilterTeacher('Ms. Hồng Phượng');
+                setFilterClass('5/1');
+              }}
+              className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3 ${
+                filterTeacher === 'Ms. Hồng Phượng' || filterClass === '5/1'
+                  ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white border-pink-600 shadow-md ring-2 ring-pink-200'
+                  : 'bg-white text-slate-800 border-pink-200 hover:border-pink-400'
+              }`}
+            >
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black shrink-0 ${
+                  filterTeacher === 'Ms. Hồng Phượng' || filterClass === '5/1' ? 'bg-white/20 text-white' : 'bg-pink-100 text-pink-700'
+                }`}
+              >
+                👩‍🏫
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider block ${
+                      filterTeacher === 'Ms. Hồng Phượng' || filterClass === '5/1' ? 'text-pink-200' : 'text-slate-500'
+                    }`}
+                  >
+                    Ms. Hồng Phượng
+                  </span>
+                  <span
+                    className={`text-[9px] font-black px-1.5 py-0.2 rounded-md ${
+                      filterTeacher === 'Ms. Hồng Phượng' || filterClass === '5/1'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-pink-100 text-pink-800'
+                    }`}
+                  >
+                    Lớp 5/1
+                  </span>
+                </div>
+                <span className="text-base sm:text-lg font-black">{hpSubmissions.length} Học Sinh</span>
+              </div>
+            </div>
+
+            {/* Card 3: Ms. Thanh Thảo - Lớp 5/3 */}
+            <div
+              onClick={() => {
+                setFilterTeacher('Ms. Thanh Thảo');
+                setFilterClass('5/3');
+              }}
+              className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3 ${
+                filterTeacher === 'Ms. Thanh Thảo' || filterClass === '5/3'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-200'
+                  : 'bg-white text-slate-800 border-indigo-200 hover:border-indigo-400'
+              }`}
+            >
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black shrink-0 ${
+                  filterTeacher === 'Ms. Thanh Thảo' || filterClass === '5/3' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'
+                }`}
+              >
+                👩‍🏫
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider block ${
+                      filterTeacher === 'Ms. Thanh Thảo' || filterClass === '5/3' ? 'text-indigo-200' : 'text-slate-500'
+                    }`}
+                  >
+                    Ms. Thanh Thảo
+                  </span>
+                  <span
+                    className={`text-[9px] font-black px-1.5 py-0.2 rounded-md ${
+                      filterTeacher === 'Ms. Thanh Thảo' || filterClass === '5/3'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-indigo-100 text-indigo-800'
+                    }`}
+                  >
+                    Lớp 5/3
+                  </span>
+                </div>
+                <span className="text-base sm:text-lg font-black">{ttSubmissions.length} Học Sinh</span>
+              </div>
+            </div>
+
+            {/* Card 4: Điểm TB & Thời lượng TB */}
+            <div className="p-3 rounded-2xl border-2 border-amber-200 bg-white text-slate-800 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-black shrink-0">
+                ⭐
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                  Đánh giá trung bình
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base sm:text-lg font-black text-amber-600">{avgRating} / 5.0</span>
+                  <span className="text-[10px] text-slate-400 font-bold">• ~{avgDuration}s/bài</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Tab Controls & Filters */}
         <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 flex-wrap">
           {/* Tabs */}
@@ -305,13 +473,13 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
             </button>
           </div>
 
-          {/* Filters */}
+          {/* Filters & Export */}
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {/* Unit Dropdown */}
             <select
               value={filterUnitId}
               onChange={(e) => setFilterUnitId(e.target.value)}
-              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs cursor-pointer"
             >
               <option value="all">Tất cả Unit</option>
               {units.map((u) => (
@@ -324,22 +492,30 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
             {/* Teacher Dropdown */}
             <select
               value={filterTeacher}
-              onChange={(e) => setFilterTeacher(e.target.value)}
-              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+              onChange={(e) => {
+                const val = e.target.value;
+                setFilterTeacher(val);
+                if (val === 'Ms. Hồng Phượng') setFilterClass('5/1');
+                else if (val === 'Ms. Thanh Thảo') setFilterClass('5/3');
+                else setFilterClass('all');
+              }}
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs cursor-pointer"
             >
               <option value="all">Tất cả Giáo viên</option>
-              {uniqueTeachers.map((t) => (
-                <option key={t} value={t}>
-                  GV: {t}
-                </option>
-              ))}
+              <option value="Ms. Hồng Phượng">GV: Ms. Hồng Phượng (Lớp 5/1)</option>
+              <option value="Ms. Thanh Thảo">GV: Ms. Thanh Thảo (Lớp 5/3)</option>
             </select>
 
             {/* Class Dropdown */}
             <select
               value={filterClass}
-              onChange={(e) => setFilterClass(e.target.value)}
-              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+              onChange={(e) => {
+                const val = e.target.value;
+                setFilterClass(val);
+                if (val === '5/1') setFilterTeacher('Ms. Hồng Phượng');
+                else if (val === '5/3') setFilterTeacher('Ms. Thanh Thảo');
+              }}
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs cursor-pointer"
             >
               <option value="all">Tất cả Lớp</option>
               {uniqueClasses.map((c) => (
@@ -350,16 +526,31 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
             </select>
 
             {/* Search Input */}
-            <div className="relative flex-1 sm:w-44">
+            <div className="relative flex-1 sm:w-36">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Tìm HS, lớp, GV..."
+                placeholder="Tìm HS, lớp..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:border-purple-500 shadow-xs"
               />
             </div>
+
+            {/* Excel CSV Export Button */}
+            <button
+              onClick={() =>
+                submissionStore.exportToCsv(
+                  filteredSubmissions,
+                  `Bao_Cao_Nop_Bai_${filterTeacher !== 'all' ? filterTeacher.replace(/[\s.]/g, '_') : 'Khoi_5'}`
+                )
+              }
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+              title="Xuất bảng điểm và bài nộp của học sinh ra file Excel CSV"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Xuất Excel</span>
+            </button>
           </div>
         </div>
 
@@ -408,8 +599,12 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
                               Lớp {sub.studentClass || '5A'}
                             </span>
                             {sub.teacherName && (
-                              <span className="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-extrabold flex items-center gap-1">
-                                <GraduationCap className="w-3 h-3 text-emerald-600" />
+                              <span className={`px-2 py-0.5 rounded-lg text-[11px] font-extrabold flex items-center gap-1 border ${
+                                sub.teacherName.includes('Hồng Phượng')
+                                  ? 'bg-pink-100 text-pink-800 border-pink-300'
+                                  : 'bg-indigo-100 text-indigo-800 border-indigo-300'
+                              }`}>
+                                <GraduationCap className="w-3 h-3" />
                                 GV: {sub.teacherName}
                               </span>
                             )}
@@ -419,12 +614,12 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold mt-0.5">
+                          <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold mt-0.5 flex-wrap">
                             <span>{sub.unitNumber}: {sub.unitTitle}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
                               <Calendar className="w-3 h-3 text-slate-400" />
-                              {new Date(sub.submittedAt).toLocaleDateString('vi-VN')} {new Date(sub.submittedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                              <span>{sub.submittedAt}</span>
                             </span>
                             <span>•</span>
                             <span>⏱️ {sub.durationSeconds || 35}s</span>
