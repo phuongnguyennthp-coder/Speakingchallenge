@@ -88,6 +88,9 @@ export interface TeacherMaterial {
   usefulExpressions: UsefulExpression[];
   practiceLevels: PracticeLevel[];
   modelAnswer: string;
+  teacherName?: string;
+  teacherTitle?: string;
+  certificateDate?: string;
 }
 
 export interface QuestionAnswerState {
