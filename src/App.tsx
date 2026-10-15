@@ -48,7 +48,7 @@ export default function App() {
 
   // App View Modes: 'dashboard' (Teacher Unit Hub) | 'lesson' (Interactive 6-step player)
   const [viewMode, setViewMode] = useState<'dashboard' | 'lesson'>('lesson');
-  const [isStudentMode, setIsStudentMode] = useState<boolean>(false);
+  const [isStudentMode, setIsStudentMode] = useState<boolean>(true);
 
   // Student Section 5 recording / challenge state
   const [challengeTranscript, setChallengeTranscript] = useState<string>('');
@@ -95,7 +95,28 @@ export default function App() {
       const unitParam = params.get('unit');
       const modeParam = params.get('mode');
 
-      if (modeParam === 'student') {
+      const isTeacherAuth = typeof window !== 'undefined' && sessionStorage.getItem('teacher_admin_auth') === 'true';
+
+      if (modeParam === 'teacher') {
+        if (isTeacherAuth) {
+          setIsStudentMode(false);
+          if (unitParam) {
+            const found = allUnits.find((u) => u.id === unitParam);
+            if (found) setCurrentMaterial(found);
+            setViewMode('lesson');
+          } else {
+            setViewMode('dashboard');
+          }
+        } else {
+          // If teacher mode requested but not verified with PIN: lock to student view and prompt PIN modal
+          setIsStudentMode(true);
+          setViewMode('lesson');
+          const found = allUnits.find((u) => u.id === unitParam);
+          if (found) setCurrentMaterial(found);
+          setIsAdminPinModalOpen(true);
+        }
+      } else {
+        // Default entry point: ALWAYS student mode! Students can NEVER access Teacher Dashboard!
         setIsStudentMode(true);
         setViewMode('lesson');
         const found = allUnits.find((u) => u.id === unitParam || u.unitNumber.toLowerCase().replace(/\s+/g, '-') === unitParam);
@@ -107,24 +128,6 @@ export default function App() {
         if (!localStorage.getItem('esmart_student_name')) {
           setIsStudentWelcomeOpen(true);
         }
-      } else if (modeParam === 'teacher') {
-        setIsStudentMode(false);
-        if (unitParam) {
-          const found = allUnits.find((u) => u.id === unitParam);
-          if (found) setCurrentMaterial(found);
-          setViewMode('lesson');
-        } else {
-          setViewMode('dashboard');
-        }
-      } else if (unitParam) {
-        const found = allUnits.find((u) => u.id === unitParam);
-        if (found) {
-          setCurrentMaterial(found);
-          setViewMode('lesson');
-        }
-      } else {
-        // Default entry point: Show Teacher Dashboard
-        setViewMode('dashboard');
       }
     }
 
@@ -225,11 +228,25 @@ export default function App() {
   };
 
   const handleBackToDashboard = () => {
+    const isTeacherAuth = typeof window !== 'undefined' && sessionStorage.getItem('teacher_admin_auth') === 'true';
+    if (!isTeacherAuth) {
+      setIsAdminPinModalOpen(true);
+      return;
+    }
     setViewMode('dashboard');
     setIsStudentMode(false);
     if (typeof window !== 'undefined') {
       window.history.pushState({}, '', `${window.location.pathname}?mode=teacher`);
     }
+  };
+
+  const handleLockToStudentMode = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('teacher_admin_auth');
+      window.history.pushState({}, '', `${window.location.pathname}?unit=${currentMaterial.id}&mode=student`);
+    }
+    setIsStudentMode(true);
+    setViewMode('lesson');
   };
 
   const handleCreateNewUnit = () => {
@@ -411,6 +428,7 @@ export default function App() {
                 onDeleteUnit={handleDeleteUnit}
                 onOpenSubmissions={() => setIsSubmissionsModalOpen(true)}
                 onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+                onLockToStudentMode={handleLockToStudentMode}
               />
             </main>
           ) : (
@@ -511,12 +529,13 @@ export default function App() {
             isOpen={isAdminPinModalOpen}
             onClose={() => setIsAdminPinModalOpen(false)}
             onUnlockSuccess={() => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.setItem('teacher_admin_auth', 'true');
+                window.history.pushState({}, '', `${window.location.pathname}?mode=teacher`);
+              }
               setIsStudentMode(false);
               setViewMode('dashboard');
               setIsAdminPinModalOpen(false);
-              if (typeof window !== 'undefined') {
-                window.history.pushState({}, '', `${window.location.pathname}?unit=${currentMaterial.id}&mode=teacher`);
-              }
             }}
           />
 
@@ -533,12 +552,16 @@ export default function App() {
             isOpen={isStudentWelcomeOpen}
             onClose={() => setIsStudentWelcomeOpen(false)}
             defaultTeacher={currentMaterial.teacherName || 'Ms. Hồng Phượng'}
-            defaultClass={currentMaterial.targetClass || '5A1'}
+            defaultClass={currentMaterial.targetClass || '5/1'}
             unitNumber={currentMaterial.unitNumber}
             unitTitle={currentMaterial.unitTitle}
             onSaveProfile={(name, sClass, teacher) => {
               setStudentName(name);
               setStudentClass(sClass);
+            }}
+            onStartDirectChallenge={() => {
+              setUnlockedStep((prev) => Math.max(prev, 5));
+              setCurrentStep(5);
             }}
           />
 
