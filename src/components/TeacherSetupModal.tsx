@@ -38,6 +38,7 @@ interface TeacherSetupModalProps {
   onClose: () => void;
   currentMaterial: TeacherMaterial;
   onSaveMaterial: (material: TeacherMaterial) => void;
+  onDeleteUnit?: (unitId: string) => void;
 }
 
 export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
@@ -45,6 +46,7 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
   onClose,
   currentMaterial,
   onSaveMaterial,
+  onDeleteUnit,
 }) => {
   if (!isOpen) return null;
 
@@ -376,6 +378,22 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {onDeleteUnit && form.id && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`Bạn có chắc chắn muốn xóa "${form.unitNumber}: ${form.unitTitle}" khỏi danh sách Unit không? Thao tác này không thể hoàn tác.`)) {
+                    onDeleteUnit(form.id);
+                    onClose();
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl bg-rose-500/80 hover:bg-rose-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                title="Xóa bài học Unit này"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Xóa Unit</span>
+              </button>
+            )}
             <button
               onClick={handleSave}
               className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1 active:scale-95"
