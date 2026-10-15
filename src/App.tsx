@@ -376,7 +376,10 @@ export default function App() {
       >
         {/* Semi-transparent backdrop overlay if custom background image is active */}
         {currentMaterial.backgroundType === 'upload' && currentMaterial.customBackgroundUrl && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] pointer-events-none z-0" />
+          <div
+            className="absolute inset-0 bg-white backdrop-blur-[1px] pointer-events-none z-0"
+            style={{ opacity: (currentMaterial.backgroundOverlayOpacity ?? 30) / 100 }}
+          />
         )}
 
         <div className="relative z-10 flex flex-col min-h-screen">
@@ -514,7 +517,7 @@ export default function App() {
             isMandatory={!hasValidApiKey()}
           />
 
-          {/* Footer with "Designed by Tím" */}
+          {/* Footer with "Designed by Ms Hồng Phượng" */}
           <footer className="mt-auto border-t border-amber-100 bg-white/85 backdrop-blur-xs py-3.5 text-center text-xs text-slate-500 font-semibold">
             <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
               <span>
@@ -522,7 +525,7 @@ export default function App() {
               </span>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-black tracking-wide border border-pink-200">
-                  Designed by Tím
+                  Designed by Ms Hồng Phượng
                 </span>
                 <span className="text-purple-600 font-bold hidden sm:inline">
                   • Speaking Confidence for Kids
