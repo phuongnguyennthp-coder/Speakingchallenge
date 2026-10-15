@@ -170,6 +170,32 @@ class SoundEffectsManager {
       t += note.d + 0.04;
     });
   }
+
+  playCelebration() {
+    this.playCelebrationFanfare();
+  }
+
+  playCheerFanfare() {
+    this.playCelebrationFanfare();
+  }
+
+  playNegativeBeep() {
+    if (!this.enabled) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.26);
+  }
 }
 
 export const sounds = new SoundEffectsManager();
