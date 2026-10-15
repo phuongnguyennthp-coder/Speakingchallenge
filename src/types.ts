@@ -90,7 +90,10 @@ export interface TeacherMaterial {
   modelAnswer: string;
   teacherName?: string;
   teacherTitle?: string;
+  targetClass?: string;
   certificateDate?: string;
+  certificateDateMode?: 'auto' | 'custom';
+  backgroundOverlayOpacity?: number;
 }
 
 export interface QuestionAnswerState {
@@ -151,6 +154,7 @@ export interface StudentSubmission {
   studentName: string;
   studentClass: string;
   schoolName: string;
+  teacherName?: string;
   transcript: string;
   audioUrl?: string;
   durationSeconds?: number;
