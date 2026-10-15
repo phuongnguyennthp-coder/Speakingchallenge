@@ -27,23 +27,48 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
   const [evaluation, setEvaluation] = useState<ChallengeEvaluation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Student Submission State
+  // Student Submission State (pre-fills from URL or localStorage)
   const [studentName, setStudentName] = useState(() => localStorage.getItem('esmart_student_name') || '');
-  const [studentClass, setStudentClass] = useState(() => localStorage.getItem('esmart_student_class') || '5A');
+  const [studentClass, setStudentClass] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlClass = params.get('class');
+      if (urlClass) return urlClass;
+    }
+    return localStorage.getItem('esmart_student_class') || material.targetClass || '5A1';
+  });
   const [schoolName, setSchoolName] = useState(() => localStorage.getItem('esmart_student_school') || '');
+  const [submissionTeacher, setSubmissionTeacher] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlTeacher = params.get('teacher');
+      if (urlTeacher) return urlTeacher;
+    }
+    return localStorage.getItem('esmart_student_teacher') || material.teacherName || 'Ms. Hồng Phượng';
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Certificate Date State & Teacher Setting Mode
-  const [certDate, setCertDate] = useState(() => {
+  // Certificate Date State: Option A (Auto completed date) vs Option B (Teacher fixed date)
+  const [certDateMode, setCertDateMode] = useState<'auto' | 'custom'>(() => {
+    return (
+      (localStorage.getItem(`esmart_cert_mode_${material.id}`) as 'auto' | 'custom') ||
+      material.certificateDateMode ||
+      'auto'
+    );
+  });
+  const [customCertDate, setCustomCertDate] = useState(() => {
     return (
       localStorage.getItem(`esmart_cert_date_${material.id}`) ||
       material.certificateDate ||
-      new Date().toLocaleDateString('vi-VN')
+      '15/10/2026'
     );
   });
   const [isEditingCertDate, setIsEditingCertDate] = useState(false);
+
+  const todayFormatted = `Ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}`;
+  const effectiveCertDate = certDateMode === 'auto' ? todayFormatted : customCertDate;
 
   useEffect(() => {
     let isMounted = true;
@@ -154,6 +179,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
       localStorage.setItem('esmart_student_name', studentName.trim());
       localStorage.setItem('esmart_student_class', studentClass.trim());
       if (schoolName.trim()) localStorage.setItem('esmart_student_school', schoolName.trim());
+      if (submissionTeacher.trim()) localStorage.setItem('esmart_student_teacher', submissionTeacher.trim());
 
       const payload = {
         unitId: material.id,
@@ -162,6 +188,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
         studentName: studentName.trim(),
         studentClass: studentClass.trim(),
         schoolName: schoolName.trim(),
+        teacherName: submissionTeacher.trim(),
         transcript: studentTranscript,
         audioUrl: studentAudioUrl || '',
         durationSeconds,
@@ -239,44 +266,87 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
 
       {/* Bottom Footer: Date & Teacher Signature */}
       <div className="pt-3 border-t-2 border-amber-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10 text-xs">
-        {/* Left: Date & Date Setting Button */}
-        <div className="space-y-1 text-center sm:text-left">
-          <div className="text-slate-500 font-bold flex items-center justify-center sm:justify-start gap-1">
+        {/* Left: Date & Date Setting Option Button */}
+        <div className="space-y-1.5 text-center sm:text-left">
+          <div className="text-slate-600 font-bold flex items-center justify-center sm:justify-start gap-1 flex-wrap">
             <Calendar className="w-3.5 h-3.5 text-amber-700" />
             <span>Ngày cấp (Issue Date):</span>
-            <span className="text-slate-800 font-black">{certDate}</span>
+            <span className="text-slate-900 font-black">{effectiveCertDate}</span>
+            <span className="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-bold">
+              {certDateMode === 'auto' ? 'Tự động theo ngày làm bài' : 'Ngày giáo viên chỉ định'}
+            </span>
           </div>
 
-          {/* Teacher Date Settings Button */}
+          {/* Teacher Date Settings Option */}
           {isEditingCertDate ? (
-            <div className="flex items-center gap-1.5 pt-1">
-              <input
-                type="text"
-                value={certDate}
-                onChange={(e) => {
-                  setCertDate(e.target.value);
-                  localStorage.setItem(`esmart_cert_date_${material.id}`, e.target.value);
-                }}
-                placeholder="vd: 15/10/2026 hoặc Ngày 15 tháng 10 năm 2026"
-                className="px-2.5 py-1 text-xs font-bold border border-amber-300 rounded-lg bg-white outline-none focus:border-amber-600 shadow-xs"
-              />
-              <button
-                type="button"
-                onClick={() => setIsEditingCertDate(false)}
-                className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-extrabold text-[11px] cursor-pointer hover:bg-emerald-700 shadow-xs"
-              >
-                Lưu
-              </button>
+            <div className="bg-white p-3.5 rounded-2xl border-2 border-amber-300 shadow-lg space-y-2.5 max-w-sm animate-fade-in">
+              <span className="text-[11px] font-black text-slate-800 block uppercase">
+                ⚙️ Chọn cách hiển thị ngày cấp giấy khen:
+              </span>
+              <label className="flex items-start gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                <input
+                  type="radio"
+                  name="certMode"
+                  checked={certDateMode === 'auto'}
+                  onChange={() => {
+                    setCertDateMode('auto');
+                    localStorage.setItem(`esmart_cert_mode_${material.id}`, 'auto');
+                  }}
+                  className="mt-0.5 accent-purple-600"
+                />
+                <div>
+                  <span className="text-purple-900">1. Ngày học sinh thực hiện</span>
+                  <p className="text-[10px] text-slate-500 font-medium">Tự động lấy theo ngày em nộp bài ({todayFormatted})</p>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                <input
+                  type="radio"
+                  name="certMode"
+                  checked={certDateMode === 'custom'}
+                  onChange={() => {
+                    setCertDateMode('custom');
+                    localStorage.setItem(`esmart_cert_mode_${material.id}`, 'custom');
+                  }}
+                  className="mt-0.5 accent-purple-600"
+                />
+                <div className="w-full">
+                  <span className="text-purple-900">2. Ngày giáo viên chỉ định cố định</span>
+                  {certDateMode === 'custom' && (
+                    <input
+                      type="text"
+                      value={customCertDate}
+                      onChange={(e) => {
+                        setCustomCertDate(e.target.value);
+                        localStorage.setItem(`esmart_cert_date_${material.id}`, e.target.value);
+                      }}
+                      placeholder="vd: 20/10/2026 hoặc Ngày 20 tháng 10 năm 2026"
+                      className="mt-1 w-full px-2.5 py-1 text-xs font-bold border border-amber-300 rounded-lg bg-amber-50/40 outline-none focus:border-amber-600"
+                    />
+                  )}
+                </div>
+              </label>
+
+              <div className="flex justify-end pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingCertDate(false)}
+                  className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-black text-xs cursor-pointer hover:bg-emerald-700 shadow-xs"
+                >
+                  ✓ Lưu Cài Đặt
+                </button>
+              </div>
             </div>
           ) : (
             <button
               type="button"
               onClick={() => setIsEditingCertDate(true)}
               className="text-[11px] font-extrabold text-amber-800 hover:text-amber-950 underline flex items-center gap-1 cursor-pointer transition-colors"
-              title="Cài đặt ngày cấp giấy khen"
+              title="Cài đặt tùy chọn ngày cấp giấy khen"
             >
               <Edit3 className="w-3 h-3" />
-              <span>Cài đặt ngày cấp giấy khen</span>
+              <span>Cài đặt ngày cấp: Tự động hoặc Chỉ định</span>
             </button>
           )}
         </div>
@@ -600,7 +670,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                 🎉 Hoan Hô! Bài Nói Của Em Đã Được Gửi Thành Công!
               </h4>
               <p className="text-xs sm:text-sm font-semibold text-emerald-800">
-                Học sinh: <strong>{studentName}</strong> (Lớp {studentClass}) • {material.unitNumber}: {material.unitTitle}.
+                Học sinh: <strong>{studentName}</strong> (Lớp {studentClass}) • GV: <strong>{submissionTeacher}</strong> • {material.unitNumber}: {material.unitTitle}.
               </p>
               <p className="text-xs text-emerald-700 font-medium">
                 Thầy cô đã nhận được bài ghi âm và sẽ sớm nghe, gửi nhận xét cũng như chấm điểm cho em nhé!
@@ -610,10 +680,10 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
         ) : (
           <form onSubmit={handleSubmitToTeacher} className="space-y-4">
             <p className="text-xs sm:text-sm text-slate-600 font-semibold">
-              Em hãy điền họ tên và lớp của mình bên dưới để nộp bài ghi âm và bài nói hoàn chỉnh cho thầy cô giáo nhé:
+              Em hãy điền họ tên, lớp và chọn giáo viên phụ trách để nộp bài ghi âm và bài nói hoàn chỉnh cho thầy cô giáo nhé:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
                   <User className="w-3.5 h-3.5 text-purple-600" />
@@ -625,7 +695,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   placeholder="Ví dụ: Nguyễn Hoàng Nam"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-purple-200 rounded-xl text-xs sm:text-sm font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
 
@@ -636,10 +706,24 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="Ví dụ: 5A1"
+                  placeholder="Ví dụ: 5A1 hoặc 5A2"
                   value={studentClass}
                   onChange={(e) => setStudentClass(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-purple-200 rounded-xl text-xs sm:text-sm font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                  <Award className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Giáo viên phụ trách</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: Ms. Hồng Phượng"
+                  value={submissionTeacher}
+                  onChange={(e) => setSubmissionTeacher(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
 
@@ -652,7 +736,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   placeholder="Ví dụ: Tiểu học Kim Đồng"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-purple-200 rounded-xl text-xs sm:text-sm font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
             </div>
