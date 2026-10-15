@@ -356,35 +356,39 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
         </div>
       )}
 
-      {/* Completion & Next Section Flow */}
-      {isUnlockEligible && (
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-gradient-to-r from-purple-100 via-indigo-100 to-pink-100 p-4 sm:p-5 rounded-3xl border-2 border-purple-300 shadow-md">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-lg shadow-xs">
-              ✓
-            </div>
-            <div>
-              <h4 className="text-sm sm:text-base font-black text-purple-950 font-heading">
-                Tuyệt Vời! Đã Hoàn Thành Luyện Mẫu Câu ({practicedCount}/{expressions.length})
-              </h4>
-              <p className="text-xs text-purple-800 font-semibold">
-                Em đã sẵn sàng bước vào Step 4 để thực hành hội thoại cùng AI Buddy!
-              </p>
-            </div>
+      {/* Bottom Step Navigation Bar - ALWAYS VISIBLE */}
+      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-purple-100 via-indigo-100 to-pink-100 p-4 sm:p-5 rounded-3xl border-2 border-purple-300 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-lg shadow-xs ${
+            practicedCount > 0 ? 'bg-emerald-500 text-white' : 'bg-purple-600 text-white'
+          }`}>
+            {practicedCount > 0 ? '✓' : '💬'}
           </div>
-
-          <button
-            onClick={() => {
-              sounds.playEncouragementChime();
-              onCompleteSection();
-            }}
-            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm shadow-md shadow-purple-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
-          >
-            <span>Mở Khóa Step 4: Thực Hành Với AI Buddy</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div>
+            <h4 className="text-sm sm:text-base font-black text-purple-950 font-heading">
+              {practicedCount > 0
+                ? `Tuyệt Vời! Đã Hoàn Thành Luyện Mẫu Câu (${practicedCount}/${expressions.length})`
+                : `Luyện Mẫu Câu (${practicedCount}/${expressions.length}) - Sẵn sàng sang Step 4`}
+            </h4>
+            <p className="text-xs text-purple-800 font-semibold">
+              {practicedCount > 0
+                ? 'Em đã sẵn sàng bước vào Step 4 để thực hành hội thoại cùng AI Buddy!'
+                : 'Em có thể luyện phát âm từng câu hoặc bấm nút bên phải để chuyển tiếp sang Step 4 bất cứ lúc nào!'}
+            </p>
+          </div>
         </div>
-      )}
+
+        <button
+          onClick={() => {
+            sounds.playEncouragementChime();
+            onCompleteSection();
+          }}
+          className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm shadow-md shadow-purple-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shrink-0"
+        >
+          <span>Chuyển Sang Step 4: Thực Hành AI Buddy</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
 
       {/* Interactive Vocabulary Memory Game Modal */}
       <VocabularyGameModal
