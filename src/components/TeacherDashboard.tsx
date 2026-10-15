@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { TeacherMaterial } from '../types';
 import { exportUnitToWord, exportUnitToPowerPoint } from '../utils/exportDocs';
+import { submissionStore } from '../utils/submissionStore';
 
 interface TeacherDashboardProps {
   units: TeacherMaterial[];
@@ -130,6 +131,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           >
             <GraduationCap className="w-5 h-5" />
             <span>Quản Lý Bài Nộp & Thống Kê</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/25 text-white text-[11px] font-black shadow-inner">
+              {submissionStore.getSubmissions().length}
+            </span>
           </button>
 
           <button
@@ -160,23 +164,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
             Hiện có <strong>{filteredUnits.length}</strong> {filterTeacher !== 'all' ? `(lọc từ ${units.length})` : ''} bài học Unit
           </span>
 
-          {uniqueTeachers.length > 0 && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
-              <span className="text-slate-500 font-semibold">Lọc Giáo Viên:</span>
-              <select
-                value={filterTeacher}
-                onChange={(e) => setFilterTeacher(e.target.value)}
-                className="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1 text-xs font-bold text-purple-900 outline-none focus:border-purple-600 cursor-pointer"
-              >
-                <option value="all">Tất cả Giáo Viên ({units.length})</option>
-                {uniqueTeachers.map((t) => (
-                  <option key={t} value={t}>
-                    GV: {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+            <span className="text-slate-500 font-semibold">Lọc Giáo Viên:</span>
+            <select
+              value={filterTeacher}
+              onChange={(e) => setFilterTeacher(e.target.value)}
+              className="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1 text-xs font-bold text-purple-900 outline-none focus:border-purple-600 cursor-pointer"
+            >
+              <option value="all">Tất cả Giáo Viên ({units.length})</option>
+              <option value="Ms. Hồng Phượng">Ms. Hồng Phượng (Lớp 5/1)</option>
+              <option value="Ms. Thanh Thảo">Ms. Thanh Thảo (Lớp 5/3)</option>
+            </select>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
