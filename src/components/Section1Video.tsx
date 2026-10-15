@@ -13,6 +13,7 @@ interface Section1VideoProps {
   onCompleteSection: () => void;
   onOpenTeacherUpload?: () => void;
   isStudentMode?: boolean;
+  onUnlockNext?: () => void;
 }
 
 export const Section1Video: React.FC<Section1VideoProps> = ({
@@ -20,6 +21,7 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
   onCompleteSection,
   onOpenTeacherUpload,
   isStudentMode = false,
+  onUnlockNext,
 }) => {
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, QuestionAnswerState>>({});
@@ -77,6 +79,10 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
         [currentQ.id]: newAnswerState,
       }));
 
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
+
       // Speak feedback audio
       speechService.speak(`${data.praiseWord || 'Great job!'} ${data.feedback || 'Good answer!'}`);
     } catch (err) {
@@ -94,6 +100,9 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
         ...prev,
         [currentQ.id]: fallbackState,
       }));
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
       speechService.speak(`Good try! Nice answer.`);
     } finally {
       setIsAnalyzing(false);
@@ -272,13 +281,34 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
                             <span>TRY AGAIN</span>
                           </button>
 
-                          {currentQuestionIdx < questions.length - 1 && (
+                          {currentQuestionIdx < questions.length - 1 ? (
+                            <>
+                              <button
+                                onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
+                                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                              >
+                                <span>Next Question</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  sounds.playEncouragementChime();
+                                  onCompleteSection();
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                              >
+                                <span>Sang Step 2 🚀</span>
+                              </button>
+                            </>
+                          ) : (
                             <button
-                              onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
-                              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                              onClick={() => {
+                                sounds.playCelebrationFanfare();
+                                onCompleteSection();
+                              }}
+                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all animate-pulse"
                             >
-                              <span>Next Question</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
+                              <span>Hoàn Thành & Sang Step 2: Mindmap ➡️</span>
                             </button>
                           )}
                         </div>
