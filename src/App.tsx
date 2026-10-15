@@ -17,6 +17,7 @@ import { DEFAULT_UNITS } from './data/defaultUnits';
 import { TeacherMaterial, BackgroundThemeType } from './types';
 import { sounds } from './utils/soundEffects';
 import { hasValidApiKey } from './utils/geminiClient';
+import { submissionStore } from './utils/submissionStore';
 
 export default function App() {
   const [units, setUnits] = useState<TeacherMaterial[]>(DEFAULT_UNITS);
@@ -168,6 +169,28 @@ export default function App() {
     setChallengeTranscript(transcript);
     if (audioUrl) setChallengeAudioUrl(audioUrl);
     if (duration) setChallengeDuration(duration);
+
+    // Auto-save submission so teachers immediately see the student's recording in analytics hub
+    try {
+      const curTeacher = localStorage.getItem('esmart_student_teacher') || currentMaterial.teacherName || 'Ms. Hồng Phượng';
+      const curClass = localStorage.getItem('esmart_student_class') || studentClass || (curTeacher.includes('Thanh Thảo') ? '5/3' : '5/1');
+      const curName = localStorage.getItem('esmart_student_name') || studentName || 'Học sinh';
+
+      submissionStore.saveSubmission({
+        unitId: currentMaterial.id,
+        unitNumber: currentMaterial.unitNumber,
+        unitTitle: currentMaterial.unitTitle,
+        studentName: curName,
+        studentClass: curClass,
+        schoolName: localStorage.getItem('esmart_student_school') || 'Tiểu học Kim Đồng',
+        teacherName: curTeacher,
+        transcript: transcript,
+        audioUrl: audioUrl || '',
+        durationSeconds: duration || 30,
+      });
+    } catch (saveErr) {
+      console.warn('Auto save challenge submission fallback:', saveErr);
+    }
 
     setUnlockedStep((prev) => Math.max(prev, 6));
     setCurrentStep(6);
