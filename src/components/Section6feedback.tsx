@@ -718,13 +718,14 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   <Award className="w-3.5 h-3.5 text-purple-600" />
                   <span>Giáo viên phụ trách</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="Ví dụ: Ms. Hồng Phượng"
+                <select
                   value={submissionTeacher}
                   onChange={(e) => setSubmissionTeacher(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
-                />
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs cursor-pointer"
+                >
+                  <option value="Ms. Hồng Phượng">Ms. Hồng Phượng</option>
+                  <option value="Ms. Thanh Thảo">Ms. Thanh Thảo</option>
+                </select>
               </div>
 
               <div className="space-y-1">
