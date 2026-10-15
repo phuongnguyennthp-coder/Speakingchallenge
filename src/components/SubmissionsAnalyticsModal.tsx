@@ -38,6 +38,8 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'list' | 'radar'>('list');
   const [filterUnitId, setFilterUnitId] = useState<string>(selectedUnitId || 'all');
+  const [filterTeacher, setFilterTeacher] = useState<string>('all');
+  const [filterClass, setFilterClass] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Audio player state
@@ -144,15 +146,27 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
     }
   };
 
+  // Unique teacher names and classes from submissions
+  const uniqueTeachers = Array.from(
+    new Set(submissions.map((s) => s.teacherName).filter(Boolean))
+  ) as string[];
+
+  const uniqueClasses = Array.from(
+    new Set(submissions.map((s) => s.studentClass).filter(Boolean))
+  ) as string[];
+
   // Filtered submissions list
   const filteredSubmissions = submissions.filter((sub) => {
     const matchesUnit = filterUnitId === 'all' || sub.unitId === filterUnitId;
+    const matchesTeacher = filterTeacher === 'all' || sub.teacherName === filterTeacher;
+    const matchesClass = filterClass === 'all' || sub.studentClass === filterClass;
     const matchesSearch =
       searchQuery.trim() === '' ||
       sub.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       sub.studentClass.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (sub.teacherName && sub.teacherName.toLowerCase().includes(searchQuery.toLowerCase())) ||
       sub.schoolName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesUnit && matchesSearch;
+    return matchesUnit && matchesTeacher && matchesClass && matchesSearch;
   });
 
   // Calculate radar chart averages across the 5 rubrics (Pronunciation, Fluency, Vocabulary, Grammar, Content)
@@ -244,7 +258,7 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
                   Teacher Submissions Hub
                 </span>
                 <span className="text-[11px] font-black uppercase tracking-wider bg-pink-500 px-2 py-0.5 rounded-lg">
-                  Designed by Tím
+                  Designed by Ms Hồng Phượng
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-black font-heading">
@@ -291,12 +305,12 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {/* Unit Dropdown */}
             <select
               value={filterUnitId}
               onChange={(e) => setFilterUnitId(e.target.value)}
-              className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
             >
               <option value="all">Tất cả Unit</option>
               {units.map((u) => (
@@ -306,12 +320,40 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
               ))}
             </select>
 
+            {/* Teacher Dropdown */}
+            <select
+              value={filterTeacher}
+              onChange={(e) => setFilterTeacher(e.target.value)}
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+            >
+              <option value="all">Tất cả Giáo viên</option>
+              {uniqueTeachers.map((t) => (
+                <option key={t} value={t}>
+                  GV: {t}
+                </option>
+              ))}
+            </select>
+
+            {/* Class Dropdown */}
+            <select
+              value={filterClass}
+              onChange={(e) => setFilterClass(e.target.value)}
+              className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none focus:border-purple-500 shadow-xs"
+            >
+              <option value="all">Tất cả Lớp</option>
+              {uniqueClasses.map((c) => (
+                <option key={c} value={c}>
+                  Lớp {c}
+                </option>
+              ))}
+            </select>
+
             {/* Search Input */}
-            <div className="relative flex-1 sm:w-48">
+            <div className="relative flex-1 sm:w-44">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Tìm tên HS, lớp..."
+                placeholder="Tìm HS, lớp, GV..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:border-purple-500 shadow-xs"
@@ -357,13 +399,19 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
                           {sub.studentName.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <h4 className="text-base font-black text-slate-900 font-heading">
                               {sub.studentName}
                             </h4>
                             <span className="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 text-[11px] font-extrabold">
                               Lớp {sub.studentClass || '5A'}
                             </span>
+                            {sub.teacherName && (
+                              <span className="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-extrabold flex items-center gap-1">
+                                <GraduationCap className="w-3 h-3 text-emerald-600" />
+                                GV: {sub.teacherName}
+                              </span>
+                            )}
                             {sub.schoolName && (
                               <span className="text-[11px] font-bold text-slate-400 hidden sm:inline">
                                 • {sub.schoolName}
@@ -675,7 +723,7 @@ export const SubmissionsAnalyticsModal: React.FC<SubmissionsAnalyticsModalProps>
         {/* Modal Footer */}
         <div className="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-semibold">
           <span>Dữ liệu được lưu trữ tự động trên máy chủ hệ thống E-SMART ENGLISH KIDS.</span>
-          <span className="font-bold text-pink-600">Designed by Tím</span>
+          <span className="font-bold text-pink-600">Designed by Ms Hồng Phượng</span>
         </div>
       </div>
     </div>
