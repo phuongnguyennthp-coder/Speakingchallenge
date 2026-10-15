@@ -113,46 +113,80 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
               />
             </div>
 
-            {/* Class */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center gap-1">
-                <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
-                <span>Lớp</span>
-              </label>
-              <input
-                type="text"
-                value={studentClass}
-                onChange={(e) => setStudentClass(e.target.value)}
-                placeholder="Ví dụ: 5/1 hoặc 5A1"
-                className="w-full text-xs font-bold p-3 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800"
-              />
-            </div>
-
-            {/* Teacher Selection: Ms. Hồng Phượng or Ms. Thanh Thảo */}
+            {/* Teacher Selection: Ms. Hồng Phượng (Lớp 5/1) or Ms. Thanh Thảo (Lớp 5/3) */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1">
                 <Award className="w-3.5 h-3.5 text-purple-600" />
                 <span>Giáo viên phụ trách</span>
+                <span className="text-rose-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: 'Ms. Hồng Phượng', label: 'Ms. Hồng Phượng' },
-                  { id: 'Ms. Thanh Thảo', label: 'Ms. Thanh Thảo' },
+                  { id: 'Ms. Hồng Phượng', label: 'Ms. Hồng Phượng', classDesc: 'Lớp 5/1' },
+                  { id: 'Ms. Thanh Thảo', label: 'Ms. Thanh Thảo', classDesc: 'Lớp 5/3' },
                 ].map((t) => (
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setTeacher(t.id)}
-                    className={`py-2.5 px-3 rounded-2xl text-xs font-black transition-all border-2 cursor-pointer text-center ${
+                    onClick={() => {
+                      setTeacher(t.id);
+                      if (t.id === 'Ms. Hồng Phượng') {
+                        setStudentClass('5/1');
+                      } else {
+                        setStudentClass('5/3');
+                      }
+                    }}
+                    className={`py-2 px-2.5 rounded-2xl text-xs font-black transition-all border-2 cursor-pointer text-center flex flex-col items-center justify-center ${
                       teacher === t.id
                         ? 'bg-purple-600 text-white border-purple-600 shadow-md ring-2 ring-purple-200'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-purple-300'
                     }`}
                   >
-                    {t.label}
+                    <span>{t.label}</span>
+                    <span className={`text-[10px] font-bold ${teacher === t.id ? 'text-purple-200' : 'text-purple-600'}`}>
+                      {t.classDesc}
+                    </span>
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Class */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Lớp của em</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">Chọn nhanh:</span>
+              </label>
+              <div className="flex gap-2 mb-2">
+                {['5/1', '5/3'].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      setStudentClass(c);
+                      if (c === '5/1') setTeacher('Ms. Hồng Phượng');
+                      if (c === '5/3') setTeacher('Ms. Thanh Thảo');
+                    }}
+                    className={`flex-1 py-1 px-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                      studentClass === c
+                        ? 'bg-purple-100 text-purple-800 border-purple-400 shadow-2xs ring-1 ring-purple-300'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-purple-300'
+                    }`}
+                  >
+                    Lớp {c}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={studentClass}
+                onChange={(e) => setStudentClass(e.target.value)}
+                placeholder="Ví dụ: 5/1 hoặc 5/3"
+                className="w-full text-xs font-bold p-3 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800"
+              />
             </div>
           </div>
 
