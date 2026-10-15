@@ -4,6 +4,7 @@ import { TeacherMaterial, ChallengeEvaluation } from '../../types';
 import { sounds } from '../../utils/soundEffects';
 import { speechService } from '../../utils/speech';
 import { aiEvaluateChallenge, hasValidApiKey } from '../../utils/geminiClient';
+import { submissionStore } from '../../utils/submissionStore';
 
 interface Section6FeedbackProps {
   material: TeacherMaterial;
@@ -197,18 +198,21 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
         nextTimeYouCanTry: evaluation?.nextTimeYouCanTry || [],
       };
 
-      const res = await fetch('/api/submissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      // Save to localStorage submissionStore
+      submissionStore.saveSubmission(payload);
 
-      if (res.ok) {
-        sounds.playCelebrationFanfare();
-        setIsSubmitted(true);
-      } else {
-        throw new Error('Nộp bài không thành công');
+      try {
+        await fetch('/api/submissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (apiErr) {
+        console.warn('Backend API submission sync fallback:', apiErr);
       }
+
+      sounds.playCelebrationFanfare();
+      setIsSubmitted(true);
     } catch (err) {
       console.warn('Submission fallback:', err);
       sounds.playCelebrationFanfare();
@@ -700,13 +704,36 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                  <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Lớp của em</span>
+                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Lớp của em</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400">Chọn nhanh:</span>
                 </label>
+                <div className="flex gap-1 mb-1">
+                  {['5/1', '5/3'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => {
+                        setStudentClass(c);
+                        if (c === '5/1') setSubmissionTeacher('Ms. Hồng Phượng');
+                        if (c === '5/3') setSubmissionTeacher('Ms. Thanh Thảo');
+                      }}
+                      className={`flex-1 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${
+                        studentClass === c
+                          ? 'bg-purple-600 text-white border-purple-600 shadow-2xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:border-purple-300'
+                      }`}
+                    >
+                      Lớp {c}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="text"
-                  placeholder="Ví dụ: 5A1 hoặc 5A2"
+                  placeholder="Ví dụ: 5/1 hoặc 5/3"
                   value={studentClass}
                   onChange={(e) => setStudentClass(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
@@ -720,11 +747,16 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                 </label>
                 <select
                   value={submissionTeacher}
-                  onChange={(e) => setSubmissionTeacher(e.target.value)}
+                  onChange={(e) => {
+                    const t = e.target.value;
+                    setSubmissionTeacher(t);
+                    if (t === 'Ms. Hồng Phượng') setStudentClass('5/1');
+                    if (t === 'Ms. Thanh Thảo') setStudentClass('5/3');
+                  }}
                   className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs cursor-pointer"
                 >
-                  <option value="Ms. Hồng Phượng">Ms. Hồng Phượng</option>
-                  <option value="Ms. Thanh Thảo">Ms. Thanh Thảo</option>
+                  <option value="Ms. Hồng Phượng">Ms. Hồng Phượng (Lớp 5/1)</option>
+                  <option value="Ms. Thanh Thảo">Ms. Thanh Thảo (Lớp 5/3)</option>
                 </select>
               </div>
 
