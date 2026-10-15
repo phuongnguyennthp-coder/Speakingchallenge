@@ -69,7 +69,9 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
 
   // Generate short student URL and Heyzine Embed code (DEFINED SAFELY)
   const baseUrl = typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : '';
-  const studentUrl = `${baseUrl}?unit=${form.id || 'unit-1'}&mode=student`;
+  const teacherParam = form.teacherName ? `&teacher=${encodeURIComponent(form.teacherName)}` : '';
+  const classParam = form.targetClass ? `&class=${encodeURIComponent(form.targetClass)}` : '';
+  const studentUrl = `${baseUrl}?unit=${form.id || 'unit-1'}&mode=student${teacherParam}${classParam}`;
   const heyzineEmbedCode = `<iframe src="${studentUrl}&embed=true" width="100%" height="800" frameborder="0" allow="microphone; camera; autoplay; display-capture; fullscreen" style="border:none; border-radius:16px; width:100%; height:800px; max-width:100%;" allowfullscreen="true"></iframe>`;
 
   // Handle Video file upload
@@ -582,17 +584,17 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                 />
               </div>
 
-              {/* Teacher Info & Certificate Date Settings */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+              {/* Teacher Info, Target Class & Certificate Date Settings */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-4">
                 <h4 className="text-xs font-black uppercase text-purple-800 tracking-wider flex items-center gap-1.5">
                   <Award className="w-4 h-4 text-purple-600" />
-                  <span>Thông Tin Giáo Viên & Cài Đặt Giấy Khen (Certificate)</span>
+                  <span>Phân Quyền Giáo Viên, Lớp Học & Cài Đặt Giấy Khen (Certificate)</span>
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Tên Giáo Viên
+                      Tên Giáo Viên Phụ Trách
                     </label>
                     <input
                       type="text"
@@ -618,15 +620,72 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Ngày Tháng Năm Cấp Giấy Khen
+                      Lớp Học Áp Dụng (Target Class)
                     </label>
                     <input
                       type="text"
-                      value={form.certificateDate || ''}
-                      onChange={(e) => setForm({ ...form, certificateDate: e.target.value })}
-                      placeholder="vd: 15/10/2026 hoặc Ngày 15 tháng 10 năm 2026"
+                      value={form.targetClass || ''}
+                      onChange={(e) => setForm({ ...form, targetClass: e.target.value })}
+                      placeholder="e.g. 5A1 hoặc 5A2"
                       className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
                     />
+                  </div>
+                </div>
+
+                {/* Certificate Date Mode Option */}
+                <div className="pt-2 border-t border-slate-200">
+                  <label className="block text-[11px] font-bold text-slate-700 mb-2">
+                    Tùy Chọn Ngày Cấp Giấy Khen (Certificate Date Mode):
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label
+                      onClick={() => setForm({ ...form, certificateDateMode: 'auto' })}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                        (form.certificateDateMode || 'auto') === 'auto'
+                          ? 'border-purple-600 bg-purple-50/50'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="certDateMode"
+                        checked={(form.certificateDateMode || 'auto') === 'auto'}
+                        onChange={() => setForm({ ...form, certificateDateMode: 'auto' })}
+                        className="mt-0.5 text-purple-600"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-slate-800">Tự động theo ngày học sinh làm bài</div>
+                        <div className="text-[10px] text-slate-500">Học sinh hoàn thành ngày nào sẽ tự động in ngày đó lên Giấy Khen (Khuyên dùng)</div>
+                      </div>
+                    </label>
+
+                    <label
+                      onClick={() => setForm({ ...form, certificateDateMode: 'custom' })}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                        form.certificateDateMode === 'custom'
+                          ? 'border-purple-600 bg-purple-50/50'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="certDateMode"
+                        checked={form.certificateDateMode === 'custom'}
+                        onChange={() => setForm({ ...form, certificateDateMode: 'custom' })}
+                        className="mt-0.5 text-purple-600"
+                      />
+                      <div className="flex-1">
+                        <div className="text-xs font-bold text-slate-800">Ngày giáo viên chỉ định cố định</div>
+                        <input
+                          type="text"
+                          disabled={form.certificateDateMode !== 'custom'}
+                          value={form.certificateDate || ''}
+                          onChange={(e) => setForm({ ...form, certificateDate: e.target.value })}
+                          placeholder="vd: 20/10/2026 hoặc Ngày 20 tháng 10 năm 2026"
+                          className="w-full mt-1.5 text-xs font-bold p-1.5 rounded-lg border border-slate-300 bg-white disabled:bg-slate-100 disabled:text-slate-400 focus:outline-purple-500"
+                        />
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -1388,6 +1447,9 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                   <p className="text-xs font-bold text-slate-700 mb-1">
                     Tùy chọn: Tải ảnh Background từ máy tính (PNG, JPG, WebP)
                   </p>
+                  <p className="text-[11px] text-slate-500 mb-3">
+                    Giúp mỗi bài học có hình nền sinh động, hấp dẫn, rực rỡ và kích thích hứng thú của học sinh!
+                  </p>
                   <input
                     type="file"
                     accept="image/*"
@@ -1395,21 +1457,59 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                     className="text-xs font-semibold text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-rose-500 file:text-white hover:file:bg-rose-600 cursor-pointer"
                   />
                   {form.backgroundType === 'upload' && form.customBackgroundUrl && (
-                    <div className="mt-3 flex items-center justify-center gap-2">
-                      <span className="text-xs text-emerald-700 font-bold">✅ Đã tải ảnh nền máy tính</span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setForm((prev) => ({
-                            ...prev,
-                            backgroundType: 'preset',
-                            customBackgroundUrl: undefined,
-                          }))
-                        }
-                        className="text-xs text-rose-600 font-bold underline cursor-pointer"
-                      >
-                        Xóa ảnh nền
-                      </button>
+                    <div className="mt-4 p-4 bg-white rounded-2xl border border-rose-200 space-y-3 text-left">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
+                          ✅ Đã tải ảnh nền máy tính
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm((prev) => ({
+                              ...prev,
+                              backgroundType: 'preset',
+                              customBackgroundUrl: undefined,
+                            }))
+                          }
+                          className="text-xs text-rose-600 font-bold underline cursor-pointer hover:text-rose-700"
+                        >
+                          Xóa ảnh nền
+                        </button>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                          <span>Độ phủ trắng làm mờ (để văn bản dễ đọc):</span>
+                          <span className="text-purple-700 font-black">{form.backgroundOverlayOpacity ?? 30}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={10}
+                          max={80}
+                          step={5}
+                          value={form.backgroundOverlayOpacity ?? 30}
+                          onChange={(e) => setForm({ ...form, backgroundOverlayOpacity: Number(e.target.value) })}
+                          className="w-full accent-purple-600 cursor-pointer"
+                        />
+                        <div className="flex justify-between text-[10px] text-slate-400 font-bold">
+                          <span>Rực rỡ sắc màu (10%)</span>
+                          <span>Cân bằng chuẩn (30%)</span>
+                          <span>Dịu mắt (80%)</span>
+                        </div>
+                      </div>
+
+                      <div className="relative h-28 w-full rounded-xl overflow-hidden border-2 border-slate-200 mt-2">
+                        <img src={form.customBackgroundUrl} alt="Preview background" className="w-full h-full object-cover" />
+                        <div
+                          className="absolute inset-0 bg-white"
+                          style={{ opacity: (form.backgroundOverlayOpacity ?? 30) / 100 }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <span className="bg-slate-900/70 text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-md">
+                            Xem trước độ rõ hình nền bài học
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
