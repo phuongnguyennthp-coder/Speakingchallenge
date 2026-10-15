@@ -309,7 +309,7 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
               )}
 
               {/* Section Completion Banner */}
-              {allCompleted && (
+              {allCompleted ? (
                 <div className="pt-4 border-t border-emerald-200 flex flex-col items-center gap-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-indigo-100 p-4 rounded-2xl border-2 border-emerald-300">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
@@ -317,10 +317,10 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                     </div>
                     <div>
                       <h4 className="text-xs sm:text-sm font-black text-emerald-950 font-heading">
-                        Section 2 Completed!
+                        Tuyệt Vời! Đã Hoàn Thành Step 2!
                       </h4>
                       <p className="text-[11px] text-emerald-800 font-semibold">
-                        Ready for Useful Expressions!
+                        Sẵn sàng khám phá mẫu câu ở Step 3!
                       </p>
                     </div>
                   </div>
@@ -332,15 +332,38 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                     }}
                     className="w-full justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm shadow-md shadow-indigo-200 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
                   >
-                    <span>Unlock Section 3: Useful Expressions</span>
+                    <span>Tiếp Tục Sang Step 3: Useful Expressions</span>
                     <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-3 border-t border-slate-200 flex justify-end">
+                  <button
+                    onClick={() => {
+                      sounds.playEncouragementChime();
+                      onCompleteSection();
+                    }}
+                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                  >
+                    <span>Tiếp Tục Sang Step 3</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-emerald-200 text-center text-slate-500 text-xs">
-              Chưa có câu hỏi nào cho bài này.
+            <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-emerald-200 text-center text-slate-600 text-xs space-y-3">
+              <p className="font-semibold">Em hãy quan sát sơ đồ tư duy Mindmap bên cạnh và bấm nút bên dưới để sang Step 3 luyện mẫu câu nhé.</p>
+              <button
+                onClick={() => {
+                  sounds.playEncouragementChime();
+                  onCompleteSection();
+                }}
+                className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs inline-flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all"
+              >
+                <span>Chuyển Sang Step 3: Useful Expressions</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
