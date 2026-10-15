@@ -365,7 +365,7 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                   Giao Nhiệm Vụ Học Tập Theo Từng Step
                 </h2>
                 <span className="px-2 py-0.5 rounded-full bg-pink-500 text-[10px] font-black uppercase text-white shadow-xs">
-                  Designed by Tím
+                  Designed by Ms Hồng Phượng
                 </span>
               </div>
               <p className="text-xs text-purple-100 font-semibold">
@@ -580,6 +580,55 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                   placeholder="e.g. Tiếng Anh 5 Global Success – General Education Curriculum 2018"
                   className="w-full text-xs font-semibold p-3 rounded-2xl border border-slate-300 focus:outline-purple-500 bg-slate-50"
                 />
+              </div>
+
+              {/* Teacher Info & Certificate Date Settings */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <h4 className="text-xs font-black uppercase text-purple-800 tracking-wider flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-purple-600" />
+                  <span>Thông Tin Giáo Viên & Cài Đặt Giấy Khen (Certificate)</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                      Tên Giáo Viên
+                    </label>
+                    <input
+                      type="text"
+                      value={form.teacherName || ''}
+                      onChange={(e) => setForm({ ...form, teacherName: e.target.value })}
+                      placeholder="e.g. Ms. Hồng Phượng"
+                      className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                      Chức Danh Giáo Viên
+                    </label>
+                    <input
+                      type="text"
+                      value={form.teacherTitle || 'English Teacher'}
+                      onChange={(e) => setForm({ ...form, teacherTitle: e.target.value })}
+                      placeholder="English Teacher"
+                      className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                      Ngày Tháng Năm Cấp Giấy Khen
+                    </label>
+                    <input
+                      type="text"
+                      value={form.certificateDate || ''}
+                      onChange={(e) => setForm({ ...form, certificateDate: e.target.value })}
+                      placeholder="vd: 15/10/2026 hoặc Ngày 15 tháng 10 năm 2026"
+                      className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Strict Knowledge Grounding Area for AI generation */}
@@ -1009,6 +1058,9 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                     <p className="text-[11px] text-slate-500 mt-1">
                       Học sinh sẽ quan sát sơ đồ và trả lời từng câu bằng giọng nói hoặc gõ text.
                     </p>
+                    <div className="bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-2.5 text-xs font-bold mt-2">
+                      ⚠️ <strong>Quy tắc quan trọng:</strong> Số câu hỏi phải bám sát 100% vào nội dung mindmap, không được lấy ngoài hoặc tự ý đưa thông tin không có trên sơ đồ vào.
+                    </div>
                   </div>
                   <button
                     type="button"
