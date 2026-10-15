@@ -13,6 +13,7 @@ interface Section2MindmapProps {
   onCompleteSection: () => void;
   onOpenTeacherUpload?: () => void;
   isStudentMode?: boolean;
+  onUnlockNext?: () => void;
 }
 
 export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
@@ -20,6 +21,7 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
   onCompleteSection,
   onOpenTeacherUpload,
   isStudentMode = false,
+  onUnlockNext,
 }) => {
   const [activeBranchId, setActiveBranchId] = useState<string>(
     material.mindmap.branches[0]?.id || ''
@@ -84,6 +86,10 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
         [currentQ.id]: newAnswer,
       }));
 
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
+
       speechService.speak(`${data.praiseWord || 'Great job!'} ${data.feedback || 'Well done!'}`);
     } catch (err) {
       console.warn('Backend analyze-comprehension fallback:', err);
@@ -100,6 +106,9 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
         ...prev,
         [currentQ.id]: fallback,
       }));
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
       speechService.speak(`Good try! Good observation of the mindmap!`);
     } finally {
       setIsAnalyzing(false);
@@ -277,13 +286,34 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                             <span>TRY AGAIN</span>
                           </button>
 
-                          {currentQuestionIdx < questions.length - 1 && (
+                          {currentQuestionIdx < questions.length - 1 ? (
+                            <>
+                              <button
+                                onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
+                                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                              >
+                                <span>Next Question</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  sounds.playEncouragementChime();
+                                  onCompleteSection();
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                              >
+                                <span>Sang Step 3 🚀</span>
+                              </button>
+                            </>
+                          ) : (
                             <button
-                              onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
-                              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
+                              onClick={() => {
+                                sounds.playCelebrationFanfare();
+                                onCompleteSection();
+                              }}
+                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all animate-pulse"
                             >
-                              <span>Next Question</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
+                              <span>Hoàn Thành & Sang Step 3: Expressions ➡️</span>
                             </button>
                           )}
                         </div>
