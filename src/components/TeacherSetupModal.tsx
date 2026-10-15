@@ -614,12 +614,28 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
                       Tên Giáo Viên Phụ Trách
                     </label>
+                    <div className="flex gap-1.5 mb-1.5">
+                      {['Ms. Hồng Phượng', 'Ms. Thanh Thảo'].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setForm({ ...form, teacherName: t })}
+                          className={`flex-1 py-1 px-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                            form.teacherName === t
+                              ? 'bg-purple-600 text-white border-purple-600 shadow-2xs'
+                              : 'bg-white text-slate-700 border-slate-300 hover:border-purple-400'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
                     <input
                       type="text"
                       value={form.teacherName || ''}
                       onChange={(e) => setForm({ ...form, teacherName: e.target.value })}
-                      placeholder="e.g. Ms. Hồng Phượng"
-                      className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
+                      placeholder="e.g. Ms. Hồng Phượng hoặc Ms. Thanh Thảo"
+                      className="w-full text-xs font-bold p-2 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
                     />
                   </div>
 
