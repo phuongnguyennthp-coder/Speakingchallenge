@@ -246,22 +246,27 @@ Generate a comprehensive JSON response matching this exact structure:
 
 /**
  * 2. AI Helper: Comprehension analysis (Section 1 & 2)
+ * Enforces: Very short concise feedback (under 10 words) & strict grounding
  */
 export async function aiAnalyzeComprehension(
   question: string,
   expectedHint: string,
   studentSpeech: string
 ): Promise<any> {
-  const prompt = `You are a supportive primary school English coach for Vietnamese Grade 5 students.
+  const prompt = `You are a friendly primary school English coach for Vietnamese Grade 5 kids.
 Question: "${question}"
 Expected Hint / Answer idea: "${expectedHint}"
 Student spoke / typed: "${studentSpeech}"
 
-Evaluate the student's answer kindly and constructively. Return JSON:
+CRITICAL RULES:
+1. FEEDBACK PHẢI CỰC KỲ NGẮN GỌN VÀ ÍT CHỮ (mỗi câu dưới 10 từ). Trẻ em không đọc đoạn văn dài!
+2. BÁM SÁT 100% NỘI DUNG BÀI / MINDMAP, tuyệt đối không lấy ngoài.
+
+Return JSON:
 {
-  "praiseWord": "A cheerful 1-2 word praise like 'Awesome!', 'Brilliant!', 'Great Job!', 'Super Star!'",
-  "encouragement": "A warm, encouraging sentence explaining what they did well.",
-  "correctionTip": "A friendly tip if they missed an idea, or empty string if correct.",
+  "praiseWord": "1-2 words cheerful praise (e.g. 'Awesome!', 'Great Job!', 'Super!')",
+  "encouragement": "Very short praise (under 8 words, e.g. 'Accurate answer! Well done!')",
+  "correctionTip": "Short tip under 8 words if not quite right, or empty string",
   "isUnderstood": true or false
 }`;
 
@@ -282,12 +287,13 @@ export async function aiAnalyzeExpression(
   const prompt = `Target sentence to practice: "${targetExpression}"
 Student spoke / typed: "${studentSpeech}"
 
-Give gentle, enthusiastic feedback for a Grade 5 student. Return JSON:
+RULE: Keep feedback very short, concise and friendly (under 8 words each).
+Return JSON:
 {
-  "praise": "Warm praise like 'Fantastic pronunciation!' or 'Well done!'",
-  "pronunciationFeedback": "Specific praise on clarity of words.",
-  "fluencyFeedback": "Comment on speaking rhythm and flow.",
-  "encouragingComment": "A positive sentence motivating them to keep speaking."
+  "praise": "Short praise (e.g. 'Great pronunciation!')",
+  "pronunciationFeedback": "Short tip under 8 words (e.g. 'Clear word sounds!')",
+  "fluencyFeedback": "Short tip under 8 words (e.g. 'Natural rhythm and pace!')",
+  "encouragingComment": "Short cheer under 8 words (e.g. 'Keep up the good speaking!')"
 }`;
 
   const { text } = await callGeminiWithFallback(prompt, {
@@ -305,16 +311,17 @@ export async function aiBuddyChat(
   buddyPrompt: string,
   studentSpeech: string
 ): Promise<any> {
-  const prompt = `You are AI Buddy, a friendly robotic peer chatting with a Grade 5 Vietnamese child.
+  const prompt = `You are AI Buddy, chatting with a Grade 5 Vietnamese child.
 Level: ${levelNumber}
-Your previous question: "${buddyPrompt}"
+Buddy Prompt: "${buddyPrompt}"
 Child's reply: "${studentSpeech}"
 
-Respond encouragingly with natural conversational English suitable for Grade 5. Return JSON:
+RULE: Keep buddy response very short and friendly (1 short sentence, under 10 words).
+Return JSON:
 {
-  "praiseWord": "Great! / Wonderful! / Super!",
-  "supportiveComment": "A supportive sentence admiring what the child shared.",
-  "buddyReply": "Your next friendly response (1-2 sentences) showing you listened."
+  "praiseWord": "Great! / Super! / Wonderful!",
+  "supportiveComment": "Short comment under 8 words",
+  "buddyReply": "One short conversational reply under 10 words"
 }`;
 
   const { text } = await callGeminiWithFallback(prompt, {
@@ -326,6 +333,7 @@ Respond encouragingly with natural conversational English suitable for Grade 5. 
 
 /**
  * 5. AI Helper: Final 30-60s Challenge Evaluation (Section 6)
+ * Enforces: Very concise and short bullet points
  */
 export async function aiEvaluateChallenge(
   transcript: string,
@@ -338,33 +346,33 @@ Context: "${context || topic}"
 Student Speaking Duration: ${durationSeconds} seconds
 Student Speaking Transcript: "${transcript}"
 
-Evaluate according to the 5 Grade 5 speaking criteria (Pronunciation, Fluency, Vocabulary, Grammar, Content Development).
-Return JSON matching this exact structure:
+CRITICAL RULE: Feedback must be SHORT, CONCISE, and FEW WORDS (each sentence under 10-12 words).
+Strictly grounded in topic / mindmap. No outside inferences.
+
+Return JSON:
 {
   "rubricFeedback": {
-    "pronunciation": "Gentle, specific assessment of clarity, ending sounds (/s/, /t/, /d/).",
-    "fluency": "Assessment of rhythm, natural pauses, and continuous speaking flow.",
-    "vocabulary": "Praise for topic-related vocabulary words used.",
-    "grammar": "Feedback on sentence structures, connectors (because, and, so).",
-    "contentDevelopment": "Assessment of opening, key ideas from mindmap, and closing."
+    "pronunciation": "Short comment under 10 words (e.g. 'Clear sounds and good ending consonants.')",
+    "fluency": "Short comment under 10 words (e.g. 'Good natural flow and steady pace.')",
+    "vocabulary": "Short comment under 10 words (e.g. 'Accurate words from the lesson mindmap.')",
+    "grammar": "Short comment under 10 words (e.g. 'Simple, correct sentence structures used.')",
+    "contentDevelopment": "Short comment under 10 words (e.g. 'Clear ideas connected directly to the topic.')"
   },
   "strengths": [
-    "Strength 1 with positive energy",
-    "Strength 2",
-    "Strength 3"
+    "Short strength 1 under 8 words",
+    "Short strength 2 under 8 words"
   ],
   "nextTimeYouCanTry": [
-    "Friendly actionable suggestion 1",
-    "Friendly actionable suggestion 2"
+    "Short friendly tip under 8 words"
   ],
   "suggestedSentenceUpgrades": [
     {
-      "original": "A simple sentence from the student",
-      "upgrade": "A slightly richer upgraded version suitable for Grade 5",
-      "tip": "Why this upgrade makes the sentence better"
+      "original": "Short simple sentence from student",
+      "upgrade": "Better Grade 5 sentence",
+      "tip": "Short tip under 8 words"
     }
   ],
-  "closingMessage": "An inspiring, warm closing message praising their courage and progress."
+  "closingMessage": "One short cheerful sentence under 10 words."
 }`;
 
   const { text } = await callGeminiWithFallback(prompt, {
