@@ -13,6 +13,7 @@ import {
   Minimize,
   Key,
   Globe,
+  User,
 } from 'lucide-react';
 import { ACCENT_OPTIONS, SpeechAccent, speechService } from '../utils/speech';
 
@@ -30,6 +31,9 @@ interface HeaderProgressProps {
   onQuickShare?: () => void;
   onOpenApiKeyModal?: () => void;
   onRequestAdminLogin?: () => void;
+  studentName?: string;
+  studentClass?: string;
+  onOpenStudentProfile?: () => void;
 }
 
 const STEP_NAMES = [
@@ -55,6 +59,9 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
   onQuickShare,
   onOpenApiKeyModal,
   onRequestAdminLogin,
+  studentName,
+  studentClass,
+  onOpenStudentProfile,
 }) => {
   const percent = Math.round((currentStep / 6) * 100);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
@@ -222,6 +229,25 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
               </div>
             )}
 
+            {/* Student Profile Pill */}
+            {isStudentMode && onOpenStudentProfile && (
+              <button
+                onClick={onOpenStudentProfile}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                title="Bấm để cập nhật Họ Tên và Lớp học của em"
+              >
+                <User className="w-3.5 h-3.5 text-purple-600" />
+                <span className="truncate max-w-[90px] sm:max-w-[130px]">
+                  {studentName ? studentName : 'Nhập Tên Em ✏️'}
+                </span>
+                {studentClass && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-purple-200/80 text-purple-900 font-extrabold hidden xs:inline">
+                    {studentClass}
+                  </span>
+                )}
+              </button>
+            )}
+
             {/* ADMIN ACCESS BUTTON FOR TEACHER ON STUDENT SCREEN (PROTECTED BY PIN) */}
             {isStudentMode && onRequestAdminLogin && (
               <button
@@ -266,7 +292,8 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
             {STEP_NAMES.map((step) => {
               const isCurrent = currentStep === step.num;
               const isCompleted = step.num < unlockedStep;
-              const isUnlocked = step.num <= unlockedStep;
+              // Teachers can access any step freely; students access steps <= unlockedStep
+              const isUnlocked = !isStudentMode || step.num <= unlockedStep;
 
               return (
                 <button
