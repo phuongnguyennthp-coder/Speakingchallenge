@@ -10,11 +10,13 @@ import { aiBuddyChat, hasValidApiKey } from '../../utils/geminiClient';
 interface Section4PracticeProps {
   material: TeacherMaterial;
   onCompleteSection: () => void;
+  onUnlockNext?: () => void;
 }
 
 export const Section4Practice: React.FC<Section4PracticeProps> = ({
   material,
   onCompleteSection,
+  onUnlockNext,
 }) => {
   const levels = material.practiceLevels;
   const [currentLevelIdx, setCurrentLevelIdx] = useState(0);
@@ -75,6 +77,10 @@ export const Section4Practice: React.FC<Section4PracticeProps> = ({
         [currentLevel.levelNumber]: newTurn,
       }));
 
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
+
       // Speak buddy feedback
       speechService.speak(`${data.praiseWord || 'Great answer!'} ${data.buddyReply || ''}`);
     } catch (err) {
@@ -94,6 +100,9 @@ export const Section4Practice: React.FC<Section4PracticeProps> = ({
         ...prev,
         [currentLevel.levelNumber]: fallbackTurn,
       }));
+      if (onUnlockNext) {
+        onUnlockNext();
+      }
       speechService.speak(`Well done! I like your idea!`);
     } finally {
       setIsAnalyzing(false);
@@ -263,13 +272,35 @@ export const Section4Practice: React.FC<Section4PracticeProps> = ({
                 </div>
               </div>
 
-              {currentLevelIdx < levels.length - 1 && (
-                <div className="text-right">
+              {currentLevelIdx < levels.length - 1 ? (
+                <div className="flex items-center justify-end gap-2 flex-wrap">
                   <button
                     onClick={() => setCurrentLevelIdx(currentLevelIdx + 1)}
-                    className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-indigo-200 flex items-center gap-2 cursor-pointer active:scale-95 ml-auto transition-all"
+                    className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-indigo-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
                   >
                     <span>Proceed to Level {currentLevelIdx + 2}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      sounds.playEncouragementChime();
+                      onCompleteSection();
+                    }}
+                    className="px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <span>Sang Step 5 🎤</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="text-right">
+                  <button
+                    onClick={() => {
+                      sounds.playCelebrationFanfare();
+                      onCompleteSection();
+                    }}
+                    className="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-amber-200 flex items-center gap-2 cursor-pointer active:scale-95 ml-auto transition-all animate-pulse"
+                  >
+                    <span>Hoàn Thành & Tiến Vào Step 5: Thử Thách Bài Nói 🎤</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
