@@ -160,6 +160,10 @@ export default function App() {
     setCurrentStep(5);
   };
 
+  const handleUnlockStep = (step: number) => {
+    setUnlockedStep((prev) => Math.max(prev, step));
+  };
+
   const handleSection5Complete = (transcript: string, audioUrl?: string, duration?: number) => {
     setChallengeTranscript(transcript);
     if (audioUrl) setChallengeAudioUrl(audioUrl);
@@ -463,6 +467,7 @@ export default function App() {
                   <Section1Video
                     material={currentMaterial}
                     onCompleteSection={handleSection1Complete}
+                    onUnlockNext={() => handleUnlockStep(2)}
                     onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
                     isStudentMode={isStudentMode}
                   />
@@ -472,6 +477,7 @@ export default function App() {
                   <Section2Mindmap
                     material={currentMaterial}
                     onCompleteSection={handleSection2Complete}
+                    onUnlockNext={() => handleUnlockStep(3)}
                     onOpenTeacherUpload={() => setIsTeacherModalOpen(true)}
                     isStudentMode={isStudentMode}
                   />
@@ -481,6 +487,7 @@ export default function App() {
                   <Section3Expressions
                     material={currentMaterial}
                     onCompleteSection={handleSection3Complete}
+                    onUnlockNext={() => handleUnlockStep(4)}
                   />
                 )}
 
@@ -488,6 +495,7 @@ export default function App() {
                   <Section4Practice
                     material={currentMaterial}
                     onCompleteSection={handleSection4Complete}
+                    onUnlockNext={() => handleUnlockStep(5)}
                   />
                 )}
 
