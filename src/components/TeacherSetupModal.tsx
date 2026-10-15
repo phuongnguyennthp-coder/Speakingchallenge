@@ -615,18 +615,27 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                       Tên Giáo Viên Phụ Trách
                     </label>
                     <div className="flex gap-1.5 mb-1.5">
-                      {['Ms. Hồng Phượng', 'Ms. Thanh Thảo'].map((t) => (
+                      {[
+                        { name: 'Ms. Hồng Phượng', classVal: '5/1' },
+                        { name: 'Ms. Thanh Thảo', classVal: '5/3' },
+                      ].map((t) => (
                         <button
-                          key={t}
+                          key={t.name}
                           type="button"
-                          onClick={() => setForm({ ...form, teacherName: t })}
+                          onClick={() =>
+                            setForm({
+                              ...form,
+                              teacherName: t.name,
+                              targetClass: t.classVal,
+                            })
+                          }
                           className={`flex-1 py-1 px-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
-                            form.teacherName === t
+                            form.teacherName === t.name
                               ? 'bg-purple-600 text-white border-purple-600 shadow-2xs'
                               : 'bg-white text-slate-700 border-slate-300 hover:border-purple-400'
                           }`}
                         >
-                          {t}
+                          {t.name}
                         </button>
                       ))}
                     </div>
@@ -656,12 +665,34 @@ export const TeacherSetupModal: React.FC<TeacherSetupModalProps> = ({
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
                       Lớp Học Áp Dụng (Target Class)
                     </label>
+                    <div className="flex gap-1.5 mb-1.5">
+                      {['5/1', '5/3'].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() =>
+                            setForm({
+                              ...form,
+                              targetClass: c,
+                              teacherName: c === '5/1' ? 'Ms. Hồng Phượng' : 'Ms. Thanh Thảo',
+                            })
+                          }
+                          className={`flex-1 py-1 px-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                            form.targetClass === c
+                              ? 'bg-purple-600 text-white border-purple-600 shadow-2xs'
+                              : 'bg-white text-slate-700 border-slate-300 hover:border-purple-400'
+                          }`}
+                        >
+                          Lớp {c}
+                        </button>
+                      ))}
+                    </div>
                     <input
                       type="text"
                       value={form.targetClass || ''}
                       onChange={(e) => setForm({ ...form, targetClass: e.target.value })}
-                      placeholder="e.g. 5A1 hoặc 5A2"
-                      className="w-full text-xs font-bold p-2.5 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
+                      placeholder="e.g. 5/1 hoặc 5/3"
+                      className="w-full text-xs font-bold p-2 rounded-xl border border-slate-300 focus:outline-purple-500 bg-white"
                     />
                   </div>
                 </div>
