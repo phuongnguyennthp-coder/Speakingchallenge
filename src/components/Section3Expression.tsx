@@ -132,26 +132,26 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
   return (
     <div className="space-y-6 animate-fade-in w-full max-w-7xl mx-auto pb-8">
       {/* Title Header */}
-      <div className="bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-purple-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 rounded-3xl p-6 sm:p-7 text-white shadow-xl shadow-purple-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-['Nunito','Baloo_2',sans-serif]">
         <div>
-          <span className="inline-block px-3 py-1 rounded-xl bg-white/20 text-white text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
-            SECTION 3
+          <span className="inline-block px-3.5 py-1 rounded-xl bg-white/25 text-white text-xs sm:text-sm font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
+            STEP 3 • BƯỚC 3
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-heading tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-heading tracking-tight flex items-center gap-2.5">
             <span>💬</span>
-            <span>LEARN USEFUL EXPRESSIONS</span>
+            <span>Useful Expressions (Mẫu Câu Nói Hay)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-purple-100 font-semibold mt-1 max-w-xl">
-            Speaking Toolbox: Luyện phát âm các mẫu câu quan trọng. Em có thể luyện từng câu và mở khóa Step 4 bất cứ lúc nào!
+          <p className="text-sm sm:text-base md:text-lg text-purple-100 font-bold mt-1.5 max-w-2xl leading-relaxed">
+            Luyện phát âm chuẩn các mẫu câu quan trọng để tự tin đưa vào bài nói nhé! ⭐
           </p>
         </div>
 
-        <div className="bg-white/20 backdrop-blur-xs px-4 py-2 rounded-2xl border border-white/30 text-center shrink-0">
-          <span className="text-[11px] uppercase tracking-wider font-extrabold text-purple-200 block">
-            Practiced
+        <div className="bg-white/25 backdrop-blur-xs px-5 py-3 rounded-2xl border-2 border-white/30 text-center shrink-0">
+          <span className="text-xs uppercase tracking-wider font-black text-purple-200 block">
+            Đã Luyện Tập
           </span>
-          <span className="text-lg font-black text-white">
-            {practicedCount} / {expressions.length}
+          <span className="text-xl sm:text-2xl font-black text-white">
+            {practicedCount} / {expressions.length} câu ⭐
           </span>
         </div>
       </div>
@@ -241,29 +241,29 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
 
       {/* Selected Expression Practice Card: Listen, Repeat, Record */}
       {selectedExp && (
-        <div className="bg-gradient-to-b from-white to-purple-50/40 rounded-3xl p-5 sm:p-7 border-2 border-purple-200 shadow-lg space-y-5">
-          <div className="bg-gradient-to-r from-purple-100 via-pink-100 to-amber-100 rounded-2xl p-5 border-2 border-purple-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="space-y-1 text-center sm:text-left">
-              <span className="text-[11px] font-black uppercase text-purple-700 bg-white px-2.5 py-0.5 rounded-lg border border-purple-200">
+        <div className="bg-gradient-to-b from-white to-purple-50/40 rounded-3xl p-5 sm:p-7 border-3 border-purple-200 shadow-xl space-y-5 font-['Nunito','Baloo_2',sans-serif]">
+          <div className="bg-gradient-to-r from-purple-100 via-pink-100 to-amber-100 rounded-3xl p-5 sm:p-6 border-2 border-purple-300 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div className="space-y-1.5 text-center sm:text-left">
+              <span className="text-xs sm:text-sm font-black uppercase text-purple-800 bg-white px-3 py-1 rounded-xl border border-purple-200 shadow-2xs">
                 {selectedExp.category}
               </span>
-              <h4 className="text-lg sm:text-xl font-black text-slate-900 font-heading">
+              <h4 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-950 font-heading leading-tight">
                 “{selectedExp.english}”
               </h4>
               {selectedExp.vietnameseGuide && (
-                <p className="text-xs font-bold text-slate-600">
-                  {selectedExp.vietnameseGuide}
+                <p className="text-sm sm:text-base font-bold text-purple-900 bg-white/70 px-3 py-1 rounded-xl inline-block">
+                  💡 {selectedExp.vietnameseGuide}
                 </p>
               )}
             </div>
 
-            {/* Model Audio Listen Button */}
+            {/* Model Audio Listen Button: min-h-[56px] */}
             <button
               onClick={() => handlePlayModelAudio(selectedExp.english)}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm shadow-md shadow-purple-200 transition-all cursor-pointer active:scale-95 shrink-0"
+              className="min-h-[56px] px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-base sm:text-lg shadow-lg shadow-purple-200 transition-all cursor-pointer active:scale-95 shrink-0 flex items-center gap-2.5"
             >
-              <Volume2 className="w-5 h-5" />
-              <span>Listen Model Audio</span>
+              <Volume2 className="w-6 h-6" />
+              <span>🔊 Nghe Đọc Mẫu (Listen)</span>
             </button>
           </div>
 
@@ -418,20 +418,20 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
       )}
 
       {/* Bottom Step Navigation Bar - ALWAYS VISIBLE */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-purple-100 via-indigo-100 to-pink-100 p-4 sm:p-5 rounded-3xl border-2 border-purple-300 shadow-md">
-        <div className="flex items-center gap-3">
-          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-lg shadow-xs ${
+      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-purple-100 via-indigo-100 to-pink-100 p-5 rounded-3xl border-2 border-purple-300 shadow-md font-['Nunito','Baloo_2',sans-serif]">
+        <div className="flex items-center gap-3.5">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-md ${
             practicedCount > 0 ? 'bg-emerald-500 text-white' : 'bg-purple-600 text-white'
           }`}>
             {practicedCount > 0 ? '✓' : '💬'}
           </div>
           <div>
-            <h4 className="text-sm sm:text-base font-black text-purple-950 font-heading">
+            <h4 className="text-base sm:text-lg font-black text-purple-950 font-heading">
               {practicedCount > 0
-                ? `Tuyệt Vời! Đã Hoàn Thành Luyện Mẫu Câu (${practicedCount}/${expressions.length})`
+                ? `Tuyệt Vời! Đã Hoàn Thành Luyện Mẫu Câu (${practicedCount}/${expressions.length}) ⭐`
                 : `Luyện Mẫu Câu (${practicedCount}/${expressions.length}) - Sẵn sàng sang Step 4`}
             </h4>
-            <p className="text-xs text-purple-800 font-semibold">
+            <p className="text-xs sm:text-sm text-purple-900 font-bold">
               {practicedCount > 0
                 ? 'Em đã sẵn sàng bước vào Step 4 để thực hành hội thoại cùng AI Buddy!'
                 : 'Em có thể luyện phát âm từng câu hoặc bấm nút bên phải để chuyển tiếp sang Step 4 bất cứ lúc nào!'}
@@ -444,10 +444,9 @@ export const Section3Expressions: React.FC<Section3ExpressionsProps> = ({
             sounds.playEncouragementChime();
             onCompleteSection();
           }}
-          className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm shadow-md shadow-purple-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shrink-0"
+          className="w-full sm:w-auto min-h-[56px] px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-sm sm:text-base shadow-lg shadow-purple-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shrink-0"
         >
-          <span>Chuyển Sang Step 4: Thực Hành AI Buddy</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>⭐ Sang Step 4: Luyện Cùng AI Buddy ➡️</span>
         </button>
       </div>
 
