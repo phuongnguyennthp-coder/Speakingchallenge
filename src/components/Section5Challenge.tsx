@@ -144,28 +144,28 @@ export const Section5Challenge: React.FC<Section5ChallengeProps> = ({
   return (
     <div className="space-y-6 animate-fade-in w-full max-w-7xl mx-auto pb-8">
       {/* Title Header */}
-      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-amber-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-6 sm:p-7 text-white shadow-xl shadow-amber-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-['Nunito','Baloo_2',sans-serif]">
         <div>
-          <span className="inline-block px-3 py-1 rounded-xl bg-white/20 text-white text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
-            SECTION 5
+          <span className="inline-block px-3.5 py-1 rounded-xl bg-white/25 text-white text-xs sm:text-sm font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
+            STEP 5 • BƯỚC 5
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-heading tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-heading tracking-tight flex items-center gap-2.5">
             <span>🎤</span>
-            <span>SPEAKING CHALLENGE (30–60 GIÂY)</span>
+            <span>Speaking Challenge (Thử Thách Bài Nói 30–60 Giây)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-amber-100 font-semibold mt-1 max-w-xl">
-            Luyện tập và ghi âm bài nói hoàn chỉnh. Quan sát sơ đồ tư duy và đoạn văn mẫu bên trái để nói thật tự tin nhé!
+          <p className="text-sm sm:text-base md:text-lg text-amber-100 font-bold mt-1.5 max-w-2xl leading-relaxed">
+            Tập trung ghi âm bài nói hoàn chỉnh. Nhìn sơ đồ tư duy và đoạn văn mẫu để nói thật lưu loát nhé! ⭐
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowToolbox(!showToolbox)}
-            className="px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-white text-xs font-bold border border-white/30 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="min-h-[48px] px-5 py-2.5 rounded-2xl bg-white/25 hover:bg-white/35 backdrop-blur-xs text-white text-xs sm:text-sm font-black border-2 border-white/30 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
           >
-            <MessageSquare className="w-4 h-4" />
-            <span>{showToolbox ? 'Ẩn Mẫu Câu Gợi Ý' : 'Xem Mẫu Câu Gợi Ý'}</span>
-            {showToolbox ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            <MessageSquare className="w-5 h-5" />
+            <span>{showToolbox ? 'Ẩn Mẫu Câu' : '💡 Xem Mẫu Câu Gợi Ý'}</span>
+            {showToolbox ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
       </div>
@@ -292,24 +292,24 @@ export const Section5Challenge: React.FC<Section5ChallengeProps> = ({
         {/* Right Column (5 cols): Speaking Challenge Recording Studio */}
         <div className="lg:col-span-5 xl:col-span-5 space-y-4">
           <div className="bg-gradient-to-b from-white to-orange-50/50 rounded-3xl p-5 sm:p-6 border-2 border-orange-200 shadow-xl space-y-4">
-            <div className="text-center space-y-1">
-              <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold uppercase">
-                Phòng Thu Bài Nói (Studio)
+            <div className="text-center space-y-1.5 font-['Nunito','Baloo_2',sans-serif]">
+              <span className="px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 text-xs sm:text-sm font-black uppercase border border-orange-200">
+                Studio • Phòng Thu Bài Nói
               </span>
-              <h3 className="text-lg sm:text-xl font-black text-slate-900 font-heading">
-                Ghi Âm Bài Nói 30–60 Giây
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                Ghi Âm Bài Nói (30–60 Giây)
               </h3>
-              <p className="text-xs text-slate-600 font-medium">
-                Bấm nút micro để bắt đầu nói, hệ thống sẽ tự động thu âm và chuyển giọng nói thành văn bản!
+              <p className="text-xs sm:text-sm text-slate-600 font-bold max-w-md mx-auto">
+                Bấm nút micro tròn to để bắt đầu nói. Hệ thống sẽ tự động thu âm và chuyển thành văn bản!
               </p>
             </div>
 
             {/* Live Timer & Waveform */}
-            <div className="flex flex-col items-center justify-center py-1">
+            <div className="flex flex-col items-center justify-center py-2">
               <div
-                className={`text-3xl sm:text-4xl font-black font-heading tracking-wider mb-1.5 ${
+                className={`text-4xl sm:text-5xl font-black font-heading tracking-wider mb-2 ${
                   timerSeconds >= 30 && timerSeconds <= 60
-                    ? 'text-emerald-600'
+                    ? 'text-emerald-600 animate-bounce'
                     : timerSeconds > 60
                     ? 'text-amber-600'
                     : 'text-slate-800'
@@ -319,112 +319,122 @@ export const Section5Challenge: React.FC<Section5ChallengeProps> = ({
               </div>
 
               {/* Animated Waveform bar */}
-              <div className="flex items-center gap-1.5 h-8 mb-2">
-                {[4, 8, 12, 16, 12, 20, 14, 18, 10, 6, 14, 20, 16, 8].map((h, i) => (
+              <div className="flex items-center gap-1.5 h-10 mb-2">
+                {[6, 12, 18, 24, 16, 28, 20, 24, 14, 8, 18, 28, 22, 10].map((h, i) => (
                   <div
                     key={i}
-                    className={`w-1.5 rounded-full transition-all duration-200 ${
+                    className={`w-2 rounded-full transition-all duration-200 ${
                       isRecording
                         ? 'bg-gradient-to-t from-orange-500 to-rose-500 animate-pulse'
                         : 'bg-slate-200'
                     }`}
                     style={{
-                      height: isRecording ? `${Math.max(6, (h * (1 + (i % 3))) % 30)}px` : '6px',
+                      height: isRecording ? `${Math.max(8, (h * (1 + (i % 3))) % 36)}px` : '8px',
                     }}
                   />
                 ))}
               </div>
 
               {timerSeconds > 0 && timerSeconds < 30 && !isRecording && (
-                <span className="text-[11px] text-amber-700 font-bold bg-amber-50 px-2.5 py-0.5 rounded-xl border border-amber-200">
-                  * Bài nói ngắn vẫn được chấp nhận! Tự tin lên nhé!
+                <span className="text-xs text-amber-900 font-extrabold bg-amber-100 px-3 py-1 rounded-xl border border-amber-300">
+                  ⭐ Bài nói của em đã được ghi lại thành công! Em có thể nộp ngay hoặc nói lại nếu muốn!
                 </span>
               )}
             </div>
 
-            {/* Action Buttons: Start Recording, Stop Recording, Replay Recording, TRY AGAIN */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {/* Big Centered Micro Button with Pulsing Wave */}
+            <div className="flex flex-col items-center justify-center gap-4 py-2">
               {!isRecording ? (
-                <button
-                  type="button"
-                  onClick={startRecording}
-                  className="flex items-center gap-2.5 px-6 py-3.5 rounded-3xl bg-gradient-to-r from-orange-500 via-rose-500 to-pink-500 hover:from-orange-600 hover:to-rose-600 text-white font-black text-sm sm:text-base shadow-xl shadow-rose-200 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <Mic className="w-4 h-4 text-white" />
-                  </div>
-                  <span>Bắt Đầu Ghi Âm (30–60s)</span>
-                </button>
+                <div className="relative group">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 via-rose-400 to-amber-400 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-300" />
+                  <button
+                    type="button"
+                    onClick={startRecording}
+                    className="relative flex flex-col items-center justify-center w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-orange-500 via-rose-500 to-pink-500 hover:from-orange-600 hover:to-rose-600 text-white shadow-2xl shadow-rose-300 border-4 border-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <Mic className="w-12 h-12 sm:w-14 sm:h-14 drop-shadow-md animate-bounce" />
+                    <span className="text-xs sm:text-sm font-black mt-1 uppercase tracking-wide">
+                      Bắt Đầu Nói
+                    </span>
+                  </button>
+                </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={stopRecording}
-                  className="flex items-center gap-2.5 px-6 py-3.5 rounded-3xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-sm sm:text-base shadow-xl shadow-red-200 transition-all animate-pulse active:scale-95 cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <Square className="w-4 h-4 text-white fill-current" />
-                  </div>
-                  <span>Dừng Ghi Âm</span>
-                </button>
+                <div className="relative flex flex-col items-center justify-center">
+                  <span className="absolute w-40 h-40 rounded-full bg-rose-400 opacity-40 animate-ping" />
+                  <span className="absolute w-48 h-48 rounded-full bg-red-300 opacity-20 animate-pulse" />
+                  <button
+                    type="button"
+                    onClick={stopRecording}
+                    className="relative z-10 flex flex-col items-center justify-center w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-red-600 to-rose-700 text-white shadow-2xl shadow-red-300 border-4 border-white transition-all transform active:scale-95 cursor-pointer ring-4 ring-rose-300 animate-pulse"
+                  >
+                    <Square className="w-10 h-10 sm:w-12 sm:h-12 fill-current drop-shadow-md" />
+                    <span className="text-xs sm:text-sm font-black mt-1 uppercase tracking-wide">
+                      Dừng & Lưu
+                    </span>
+                  </button>
+                </div>
               )}
 
-              {audioUrl && !isRecording && (
-                <button
-                  type="button"
-                  onClick={handleReplay}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-sky-100 hover:bg-sky-200 text-sky-800 font-extrabold text-xs shadow-xs transition-all active:scale-95 cursor-pointer"
-                >
-                  <Play className="w-3.5 h-3.5 fill-current text-sky-700" />
-                  <span>Nghe Lại</span>
-                </button>
-              )}
+              {/* Action Buttons: Replay Recording, TRY AGAIN (Min Height 56px) */}
+              {(audioUrl || transcript) && !isRecording && (
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  {audioUrl && (
+                    <button
+                      type="button"
+                      onClick={handleReplay}
+                      className="min-h-[56px] px-6 py-3 rounded-2xl bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-900 font-black text-sm sm:text-base shadow-sm transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+                    >
+                      <Play className="w-5 h-5 fill-current text-sky-700" />
+                      <span>▶️ Nghe Lại Bài Nói</span>
+                    </button>
+                  )}
 
-              {(transcript || audioUrl) && !isRecording && (
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-all active:scale-95 cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Ghi Âm Lại</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="min-h-[56px] px-6 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-slate-800 font-black text-sm sm:text-base transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+                  >
+                    <RotateCcw className="w-5 h-5 text-slate-600" />
+                    <span>🔄 Ghi Âm Lại</span>
+                  </button>
+                </div>
               )}
             </div>
 
-            {/* Live Transcript Preview / Type Speech */}
-            <div className="bg-white rounded-2xl p-3.5 border border-orange-100 shadow-inner space-y-1">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>Lời bài nói (Speech Transcript):</span>
+            {/* Live Transcript Preview / Type Speech with 18-20px Font */}
+            <div className="bg-white rounded-3xl p-5 border-2 border-orange-200 shadow-inner space-y-2">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-black text-slate-600">
+                <span>Lời bài nói của em (Speech Transcript):</span>
                 {transcript && (
-                  <span className="text-emerald-600 font-extrabold flex items-center gap-1 text-[11px]">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Đã nhận diện
+                  <span className="text-emerald-700 font-black flex items-center gap-1 bg-emerald-100 px-2.5 py-0.5 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    Đã nhận diện tốt
                   </span>
                 )}
               </div>
               <textarea
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
-                placeholder="Lời bài nói em vừa thu âm sẽ hiện ở đây, hoặc em có thể gõ / chỉnh sửa bài nói trực tiếp tại đây..."
-                rows={3}
-                className="w-full text-xs sm:text-sm font-semibold text-slate-800 p-2.5 rounded-xl border border-orange-200 focus:outline-none focus:border-orange-400 bg-orange-50/20 italic leading-relaxed"
+                placeholder="Lời bài nói em vừa thu âm sẽ hiện ở đây, hoặc em có thể gõ / chỉnh sửa bài nói trực tiếp tại đây trước khi nộp..."
+                rows={4}
+                className="w-full text-base sm:text-lg font-bold text-slate-900 p-4 rounded-2xl border-2 border-orange-200 focus:outline-none focus:border-orange-400 bg-orange-50/20 leading-relaxed"
               />
-              <div className="text-[10px] text-slate-400 text-right">
-                * Em có thể chỉnh sửa lời bài nói trước khi nộp cho AI chấm điểm!
+              <div className="text-xs text-slate-500 font-bold text-right">
+                💡 Em có thể chỉnh sửa câu từ trước khi bấm nút nhận xét!
               </div>
             </div>
 
-            {/* Submit to AI Feedback */}
+            {/* Submit to AI Feedback: Big 60px Touch Button */}
             {(transcript.trim().length > 0 || audioUrl) && !isRecording && (
-              <div className="pt-1">
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-black text-sm sm:text-base shadow-lg shadow-amber-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
+                  className="w-full min-h-[60px] py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-black text-base sm:text-xl shadow-xl shadow-amber-200 flex items-center justify-center gap-3 cursor-pointer active:scale-95 transition-all transform hover:scale-[1.01]"
                 >
-                  <Sparkles className="w-4 h-4 text-amber-200 animate-spin" />
-                  <span>Chấm Điểm & Nhận Xét Bài Nói (Section 6) ⭐</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <Sparkles className="w-6 h-6 text-amber-200 animate-spin" />
+                  <span>⭐ Chấm Điểm & Nhận Giấy Khen (Step 6) 🏆</span>
+                  <ArrowRight className="w-6 h-6 stroke-[3]" />
                 </button>
               </div>
             )}
