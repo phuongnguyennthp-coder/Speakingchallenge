@@ -129,17 +129,17 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
   return (
     <div className="space-y-6 animate-fade-in w-full max-w-7xl mx-auto pb-8">
       {/* Section Header Banner */}
-      <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-teal-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 rounded-3xl p-6 sm:p-7 text-white shadow-xl shadow-teal-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-['Nunito','Baloo_2',sans-serif]">
         <div>
-          <span className="inline-block px-3 py-1 rounded-xl bg-white/20 text-white text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
-            SECTION 2
+          <span className="inline-block px-3.5 py-1 rounded-xl bg-white/25 text-white text-xs sm:text-sm font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
+            STEP 2 • BƯỚC 2
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-heading tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-heading tracking-tight flex items-center gap-2.5">
             <span>🧠</span>
-            <span>STUDY THE MINDMAP</span>
+            <span>Study the Mindmap (Khám Phá Sơ Đồ Tư Duy)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-emerald-50 font-semibold mt-1 max-w-xl">
-            Look at the mindmap and explore the key ideas. Click on branches to listen to explanations!
+          <p className="text-sm sm:text-base md:text-lg text-emerald-50 font-bold mt-1.5 max-w-2xl leading-relaxed">
+            Quan sát các nhánh sơ đồ tư duy để nắm chắc từ vựng và ý tưởng bài học nhé! ⭐
           </p>
         </div>
 
@@ -147,10 +147,10 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
         {!isStudentMode && onOpenTeacherUpload && (
           <button
             onClick={onOpenTeacherUpload}
-            className="self-start sm:self-center px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-white text-xs font-bold border border-white/30 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="self-start sm:self-center min-h-[48px] px-5 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-white text-xs sm:text-sm font-black border border-white/30 transition-all flex items-center gap-2 cursor-pointer"
           >
-            <ImageIcon className="w-4 h-4" />
-            <span>Upload / Edit Mindmap</span>
+            <ImageIcon className="w-5 h-5" />
+            <span>Upload / Sửa Mindmap</span>
           </button>
         )}
       </div>
@@ -233,19 +233,19 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
               {/* Current Question */}
               {currentQ && (
                 <div className="space-y-4">
-                  <div className="bg-white rounded-2xl p-4 border-2 border-emerald-100 shadow-xs">
+                  <div className="bg-white rounded-3xl p-5 border-2 border-emerald-200 shadow-sm space-y-2">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-2.5">
-                        <div className="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-800 font-black flex items-center justify-center text-xs shrink-0">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-black flex items-center justify-center text-sm sm:text-base shrink-0 shadow-md">
                           {currentQuestionIdx + 1}
                         </div>
                         <div>
-                          <h4 className="text-sm sm:text-base font-black text-slate-800 font-heading">
+                          <h4 className="text-base sm:text-lg md:text-xl font-black text-slate-900 leading-snug font-heading">
                             {currentQ.question}
                           </h4>
                           {currentQ.expectedHint && (
-                            <p className="text-xs text-slate-500 font-semibold mt-1">
-                              💡 Hint: {currentQ.expectedHint}
+                            <p className="text-sm sm:text-base text-emerald-900 font-bold mt-2 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 inline-block">
+                              💡 Gợi ý: {currentQ.expectedHint}
                             </p>
                           )}
                         </div>
@@ -253,10 +253,10 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
 
                       <button
                         onClick={() => speechService.speak(currentQ.question)}
-                        className="p-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 cursor-pointer transition-colors shrink-0"
-                        title="Listen to question"
+                        className="p-2.5 rounded-2xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 cursor-pointer transition-colors shrink-0"
+                        title="Nghe câu hỏi"
                       >
-                        <Volume2 className="w-4 h-4" />
+                        <Volume2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
@@ -271,51 +271,52 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                         bubbleColor="from-emerald-50 to-teal-50"
                       />
 
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex flex-col gap-2 text-xs sm:text-sm">
-                        <div className="flex items-center gap-2 text-emerald-900 font-bold">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <div className="bg-emerald-50 border-2 border-emerald-300 rounded-3xl p-4 sm:p-5 flex flex-col gap-3 text-sm sm:text-base shadow-md">
+                        <div className="flex items-center gap-2 text-emerald-950 font-black">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                           <span className="line-clamp-2">Your Answer: “{currentAnswer.studentSpeech}”</span>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2 pt-1 border-t border-emerald-200/60">
+                        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-emerald-200">
                           <button
                             onClick={handleTryAgain}
-                            className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95 shadow-xs"
+                            className="min-h-[50px] px-4 py-2 rounded-2xl bg-white hover:bg-emerald-100 text-emerald-900 border-2 border-emerald-300 font-black text-xs sm:text-sm flex items-center gap-2 cursor-pointer transition-all active:scale-95 shadow-xs"
                           >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span>TRY AGAIN</span>
+                            <RotateCcw className="w-4 h-4" />
+                            <span>🔄 Trả lời lại</span>
                           </button>
 
-                          {currentQuestionIdx < questions.length - 1 ? (
-                            <>
-                              <button
-                                onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
-                                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
-                              >
-                                <span>Next Question</span>
-                                <ArrowRight className="w-3.5 h-3.5" />
-                              </button>
+                          <div className="flex items-center gap-2">
+                            {currentQuestionIdx < questions.length - 1 ? (
+                              <>
+                                <button
+                                  onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
+                                  className="min-h-[52px] px-5 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+                                >
+                                  <span>Câu tiếp theo ➡️</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    sounds.playEncouragementChime();
+                                    onCompleteSection();
+                                  }}
+                                  className="min-h-[52px] px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+                                >
+                                  <span>Sang Step 3 🚀</span>
+                                </button>
+                              </>
+                            ) : (
                               <button
                                 onClick={() => {
-                                  sounds.playEncouragementChime();
+                                  sounds.playCelebrationFanfare();
                                   onCompleteSection();
                                 }}
-                                className="px-3 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                className="min-h-[56px] px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-200 active:scale-95 transition-all animate-pulse"
                               >
-                                <span>Sang Step 3 🚀</span>
+                                <span>⭐ Hoàn Thành & Sang Step 3: Useful Expressions ➡️</span>
                               </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                sounds.playCelebrationFanfare();
-                                onCompleteSection();
-                              }}
-                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all animate-pulse"
-                            >
-                              <span>Hoàn Thành & Sang Step 3: Expressions ➡️</span>
-                            </button>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -323,14 +324,14 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                     /* Voice/Type Dual Mode */
                     <div className="space-y-3">
                       <VoiceRecorder
-                        promptText={`Question ${currentQuestionIdx + 1}: Record or type from the mindmap`}
-                        buttonLabel="Record Voice Answer"
+                        promptText={`Câu hỏi ${currentQuestionIdx + 1}/${questions.length}: Nói hoặc gõ câu trả lời từ mindmap`}
+                        buttonLabel="Bấm Để Nói"
                         isProcessing={isAnalyzing}
                         onRecordingComplete={handleVoiceAnswer}
                       />
                       <div className="text-center">
-                        <span className="text-[11px] text-slate-500 font-medium">
-                          * Trả lời ngắn gọn từ ý trong nhánh mindmap.
+                        <span className="text-xs sm:text-sm text-slate-500 font-bold">
+                          💡 Em hãy tìm ý trong các nhánh sơ đồ tư duy để trả lời nhé!
                         </span>
                       </div>
                     </div>
@@ -340,17 +341,17 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
 
               {/* Section Completion Banner */}
               {allCompleted ? (
-                <div className="pt-4 border-t border-emerald-200 flex flex-col items-center gap-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-indigo-100 p-4 rounded-2xl border-2 border-emerald-300">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                <div className="pt-4 border-t-2 border-emerald-200 flex flex-col items-center gap-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-indigo-100 p-5 rounded-3xl border-2 border-emerald-300 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-lg shadow-md">
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-xs sm:text-sm font-black text-emerald-950 font-heading">
-                        Tuyệt Vời! Đã Hoàn Thành Step 2!
+                      <h4 className="text-base sm:text-lg font-black text-emerald-950 font-heading">
+                        Tuyệt Vời! Đã Hoàn Thành Step 2! ⭐
                       </h4>
-                      <p className="text-[11px] text-emerald-800 font-semibold">
-                        Sẵn sàng khám phá mẫu câu ở Step 3!
+                      <p className="text-xs sm:text-sm text-emerald-800 font-bold">
+                        Sẵn sàng khám phá các mẫu câu nói hay ở Step 3!
                       </p>
                     </div>
                   </div>
@@ -360,10 +361,9 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                       sounds.playEncouragementChime();
                       onCompleteSection();
                     }}
-                    className="w-full justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm shadow-md shadow-indigo-200 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                    className="w-full min-h-[56px] justify-center px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-base sm:text-lg shadow-lg shadow-indigo-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
                   >
-                    <span>Tiếp Tục Sang Step 3: Useful Expressions</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>⭐ Tiếp Tục Sang Step 3: Useful Expressions ➡️</span>
                   </button>
                 </div>
               ) : (
@@ -373,10 +373,9 @@ export const Section2Mindmap: React.FC<Section2MindmapProps> = ({
                       sounds.playEncouragementChime();
                       onCompleteSection();
                     }}
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                    className="min-h-[56px] px-6 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer active:scale-95 transition-all shadow-md shadow-purple-200"
                   >
-                    <span>Tiếp Tục Sang Step 3</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>⭐ Tiếp Tục Sang Step 3 ➡️</span>
                   </button>
                 </div>
               )}
