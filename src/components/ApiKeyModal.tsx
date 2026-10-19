@@ -146,7 +146,7 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                   AI Configuration
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-wider bg-pink-500 px-2 py-0.5 rounded-lg">
-                  Designed by Tím
+                  Designed by Ms Hồng Phượng
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-black font-heading">
@@ -155,14 +155,13 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
             </div>
           </div>
 
-          {!isMandatory && (
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer"
+            title="Đóng / Bỏ qua"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Modal Body */}
@@ -342,24 +341,32 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={handleQuickSaveWithoutTest}
-                className="text-xs font-bold text-slate-600 hover:text-purple-700 underline cursor-pointer"
-              >
-                Lưu nhanh không kiểm tra
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleQuickSaveWithoutTest}
+                  className="text-xs font-bold text-slate-600 hover:text-purple-700 underline cursor-pointer"
+                >
+                  Lưu nhanh không kiểm tra
+                </button>
+                <span className="text-slate-300">•</span>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-xs font-bold text-amber-700 hover:text-amber-800 underline cursor-pointer"
+                >
+                  Dùng thử AI Offline
+                </button>
+              </div>
 
               <div className="flex items-center gap-2">
-                {!isMandatory && (
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
-                  >
-                    Đóng
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
+                >
+                  Đóng
+                </button>
 
                 <button
                   type="submit"
@@ -386,7 +393,7 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
         {/* Footer */}
         <div className="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-semibold">
           <span>API Key được lưu riêng trên trình duyệt, không chia sẻ lên GitHub.</span>
-          <span className="font-bold text-pink-600">Designed by Tím</span>
+          <span className="font-bold text-pink-600">Designed by Ms Hồng Phượng</span>
         </div>
       </div>
     </div>
