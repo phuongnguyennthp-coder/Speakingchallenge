@@ -123,17 +123,17 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
   return (
     <div className="space-y-6 animate-fade-in w-full max-w-7xl mx-auto pb-8">
       {/* Title Header */}
-      <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-pink-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-3xl p-6 sm:p-7 text-white shadow-xl shadow-pink-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-['Nunito','Baloo_2',sans-serif]">
         <div>
-          <span className="inline-block px-3 py-1 rounded-xl bg-white/20 text-white text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
-            SECTION 1
+          <span className="inline-block px-3.5 py-1 rounded-xl bg-white/25 text-white text-xs sm:text-sm font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
+            STEP 1 • BƯỚC 1
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-heading tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-heading tracking-tight flex items-center gap-2.5">
             <span>🎥</span>
-            <span>WATCH / LISTEN TO MODEL PRESENTATION</span>
+            <span>Watch & Listen (Xem & Nghe Bài Mẫu)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-pink-100 font-semibold mt-1 max-w-xl">
-            Watch the video or listen to the audio carefully. Pay attention to pronunciation, vocabulary, and sentence patterns.
+          <p className="text-sm sm:text-base md:text-lg text-pink-100 font-bold mt-1.5 max-w-2xl leading-relaxed">
+            Em hãy xem video và lắng nghe thật kỹ cách phát âm và các ý chính nhé! ⭐
           </p>
         </div>
 
@@ -141,10 +141,10 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
         {!isStudentMode && onOpenTeacherUpload && (
           <button
             onClick={onOpenTeacherUpload}
-            className="self-start sm:self-center px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-white text-xs font-bold border border-white/30 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="self-start sm:self-center min-h-[48px] px-5 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-xs text-white text-xs sm:text-sm font-black border border-white/30 transition-all flex items-center gap-2 cursor-pointer"
           >
-            <Video className="w-4 h-4" />
-            <span>Upload / Change Media</span>
+            <Video className="w-5 h-5" />
+            <span>Upload / Thay Video</span>
           </button>
         )}
       </div>
@@ -229,19 +229,19 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
               {/* Current Question Card */}
               {currentQ && (
                 <div className="space-y-4">
-                  <div className="bg-white rounded-2xl p-4 border-2 border-amber-100 shadow-xs">
+                  <div className="bg-white rounded-3xl p-5 border-2 border-amber-200 shadow-sm space-y-2">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-2.5">
-                        <div className="w-7 h-7 rounded-xl bg-pink-100 text-pink-700 font-black flex items-center justify-center text-xs shrink-0">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-pink-500 to-amber-500 text-white font-black flex items-center justify-center text-sm sm:text-base shrink-0 shadow-md">
                           {currentQuestionIdx + 1}
                         </div>
                         <div>
-                          <h4 className="text-sm sm:text-base font-black text-slate-800 font-heading">
+                          <h4 className="text-base sm:text-lg md:text-xl font-black text-slate-900 leading-snug font-heading">
                             {currentQ.question}
                           </h4>
                           {currentQ.expectedHint && (
-                            <p className="text-xs text-slate-500 font-semibold mt-1">
-                              💡 Hint: {currentQ.expectedHint}
+                            <p className="text-sm sm:text-base text-amber-900 font-bold mt-2 bg-amber-50 p-2.5 rounded-xl border border-amber-200 inline-block">
+                              💡 Gợi ý: {currentQ.expectedHint}
                             </p>
                           )}
                         </div>
@@ -249,10 +249,10 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
 
                       <button
                         onClick={() => speechService.speak(currentQ.question)}
-                        className="p-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 cursor-pointer transition-colors shrink-0"
-                        title="Listen to question"
+                        className="p-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 cursor-pointer transition-colors shrink-0"
+                        title="Nghe câu hỏi"
                       >
-                        <Volume2 className="w-4 h-4" />
+                        <Volume2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
@@ -266,51 +266,52 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
                         state="cheering"
                       />
 
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex flex-col gap-2 text-xs sm:text-sm">
-                        <div className="flex items-center gap-2 text-emerald-900 font-bold">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <div className="bg-emerald-50 border-2 border-emerald-300 rounded-3xl p-4 sm:p-5 flex flex-col gap-3 text-sm sm:text-base shadow-md">
+                        <div className="flex items-center gap-2 text-emerald-950 font-black">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                           <span className="line-clamp-2">Your Answer: “{currentAnswer.studentSpeech}”</span>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2 pt-1 border-t border-emerald-200/60">
+                        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-emerald-200">
                           <button
                             onClick={handleTryAgain}
-                            className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95 shadow-xs"
+                            className="min-h-[50px] px-4 py-2 rounded-2xl bg-white hover:bg-emerald-100 text-emerald-900 border-2 border-emerald-300 font-black text-xs sm:text-sm flex items-center gap-2 cursor-pointer transition-all active:scale-95 shadow-xs"
                           >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span>TRY AGAIN</span>
+                            <RotateCcw className="w-4 h-4" />
+                            <span>🔄 Trả lời lại</span>
                           </button>
 
-                          {currentQuestionIdx < questions.length - 1 ? (
-                            <>
-                              <button
-                                onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
-                                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
-                              >
-                                <span>Next Question</span>
-                                <ArrowRight className="w-3.5 h-3.5" />
-                              </button>
+                          <div className="flex items-center gap-2">
+                            {currentQuestionIdx < questions.length - 1 ? (
+                              <>
+                                <button
+                                  onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
+                                  className="min-h-[52px] px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+                                >
+                                  <span>Câu tiếp theo ➡️</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    sounds.playEncouragementChime();
+                                    onCompleteSection();
+                                  }}
+                                  className="min-h-[52px] px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all"
+                                >
+                                  <span>Sang Step 2 🚀</span>
+                                </button>
+                              </>
+                            ) : (
                               <button
                                 onClick={() => {
-                                  sounds.playEncouragementChime();
+                                  sounds.playCelebrationFanfare();
                                   onCompleteSection();
                                 }}
-                                className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-extrabold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                className="min-h-[56px] px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-200 active:scale-95 transition-all animate-pulse"
                               >
-                                <span>Sang Step 2 🚀</span>
+                                <span>⭐ Hoàn Thành & Sang Step 2: Mindmap ➡️</span>
                               </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                sounds.playCelebrationFanfare();
-                                onCompleteSection();
-                              }}
-                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all animate-pulse"
-                            >
-                              <span>Hoàn Thành & Sang Step 2: Mindmap ➡️</span>
-                            </button>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -318,14 +319,14 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
                     /* If Not Answered: VoiceRecorder with Voice and Type Dual Mode */
                     <div className="space-y-3">
                       <VoiceRecorder
-                        promptText={`Question ${currentQuestionIdx + 1} of ${questions.length}: Speak or type answer`}
-                        buttonLabel="Record Voice Answer"
+                        promptText={`Câu hỏi ${currentQuestionIdx + 1}/${questions.length}: Nói hoặc gõ câu trả lời`}
+                        buttonLabel="Bấm Để Nói"
                         isProcessing={isAnalyzing}
                         onRecordingComplete={handleVoiceAnswer}
                       />
                       <div className="text-center">
-                        <span className="text-[11px] text-slate-500 font-medium">
-                          * Trả lời ngắn gọn bằng tiếng Anh.
+                        <span className="text-xs sm:text-sm text-slate-500 font-bold">
+                          💡 Em hãy trả lời thật ngắn gọn và tự tin bằng tiếng Anh nhé!
                         </span>
                       </div>
                     </div>
@@ -335,16 +336,16 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
 
               {/* Section Completion Banner */}
               {allCompleted ? (
-                <div className="pt-4 border-t border-amber-200 flex flex-col items-center gap-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-amber-100 p-4 rounded-2xl border-2 border-emerald-300">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                <div className="pt-4 border-t-2 border-amber-200 flex flex-col items-center gap-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-amber-100 p-5 rounded-3xl border-2 border-emerald-300 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-black text-lg shadow-md">
                       ✓
                     </div>
                     <div>
-                      <h4 className="text-xs sm:text-sm font-black text-emerald-950 font-heading">
-                        Tuyệt Vời! Đã Hoàn Thành Step 1!
+                      <h4 className="text-base sm:text-lg font-black text-emerald-950 font-heading">
+                        Tuyệt Vời! Đã Hoàn Thành Step 1! ⭐
                       </h4>
-                      <p className="text-[11px] text-emerald-800 font-semibold">
+                      <p className="text-xs sm:text-sm text-emerald-800 font-bold">
                         Sẵn sàng khám phá sơ đồ tư duy Mindmap ở Step 2!
                       </p>
                     </div>
@@ -355,10 +356,9 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
                       sounds.playEncouragementChime();
                       onCompleteSection();
                     }}
-                    className="w-full justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-200 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                    className="w-full min-h-[56px] justify-center px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-base sm:text-lg shadow-lg shadow-emerald-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
                   >
-                    <span>Tiếp Tục Sang Step 2: Khám Phá Mindmap</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>⭐ Tiếp Tục Sang Step 2: Khám Phá Mindmap ➡️</span>
                   </button>
                 </div>
               ) : (
@@ -368,10 +368,9 @@ export const Section1Video: React.FC<Section1VideoProps> = ({
                       sounds.playEncouragementChime();
                       onCompleteSection();
                     }}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                    className="min-h-[56px] px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base flex items-center gap-2 cursor-pointer active:scale-95 transition-all shadow-md shadow-indigo-200"
                   >
-                    <span>Tiếp Tục Sang Step 2</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>⭐ Tiếp Tục Sang Step 2 ➡️</span>
                   </button>
                 </div>
               )}
