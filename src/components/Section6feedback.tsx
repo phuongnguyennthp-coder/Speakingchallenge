@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles, Star, Award, RotateCcw, Check, Heart, Volume2, BookOpen, ThumbsUp, PartyPopper, Send, CheckCircle2, User, GraduationCap, Calendar, Edit3, Printer } from 'lucide-react';
+import { Sparkles, Star, Award, RotateCcw, Check, Heart, Volume2, BookOpen, ThumbsUp, PartyPopper, Send, CheckCircle2, User, GraduationCap, Calendar, Edit3, Printer, Download } from 'lucide-react';
 import { TeacherMaterial, ChallengeEvaluation } from '../../types';
 import { sounds } from '../../utils/soundEffects';
 import { speechService } from '../../utils/speech';
 import { aiEvaluateChallenge, hasValidApiKey } from '../../utils/geminiClient';
 import { submissionStore } from '../../utils/submissionStore';
+import { Confetti } from '../Confetti';
 
 interface Section6FeedbackProps {
   material: TeacherMaterial;
@@ -27,6 +28,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
 }) => {
   const [evaluation, setEvaluation] = useState<ChallengeEvaluation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(true);
 
   // Student Submission State (pre-fills from URL or localStorage)
   const [studentName, setStudentName] = useState(() => localStorage.getItem('esmart_student_name') || '');
@@ -212,10 +214,12 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
       }
 
       sounds.playCelebrationFanfare();
+      setShowConfetti(true);
       setIsSubmitted(true);
     } catch (err) {
       console.warn('Submission fallback:', err);
       sounds.playCelebrationFanfare();
+      setShowConfetti(true);
       setIsSubmitted(true);
     } finally {
       setIsSubmitting(false);
@@ -374,7 +378,9 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
   // If student selected NO -> Finished Screen!
   if (hasFinishedLesson) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-10 px-4 space-y-6 animate-fade-in">
+      <div className="max-w-3xl mx-auto text-center py-10 px-4 space-y-6 animate-fade-in font-['Nunito','Baloo_2',sans-serif]">
+        {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
+
         <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-1 shadow-2xl shadow-rose-200 animate-bounce">
           <div className="w-full h-full bg-white rounded-2xl flex items-center justify-center">
             <PartyPopper className="w-12 h-12 text-rose-500" />
@@ -382,28 +388,36 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
         </div>
 
         <div className="space-y-2">
-          <span className="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black uppercase tracking-wider">
-            Lesson Completed!
+          <span className="px-5 py-2 rounded-full bg-emerald-100 text-emerald-900 text-xs sm:text-sm font-black uppercase tracking-wider border border-emerald-300">
+            ⭐ Hoàn Thành Bài Học • Lesson Completed! ⭐
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading">
-            Congratulations, English Champion! 🎉
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-heading">
+            Chúc Mừng Em! English Speaking Champion! 🎉
           </h2>
-          <p className="text-base sm:text-lg text-slate-700 font-bold max-w-lg mx-auto leading-relaxed">
-            You completed all 6 steps of the Speaking Challenge for{' '}
-            <span className="text-purple-600 font-extrabold">{material.unitNumber}: {material.unitTitle}</span>.
+          <p className="text-base sm:text-xl text-slate-800 font-bold max-w-xl mx-auto leading-relaxed">
+            Em đã hoàn thành xuất sắc toàn bộ 6 bước thử thách nói cho{' '}
+            <span className="text-purple-700 font-black">{material.unitNumber}: {material.unitTitle}</span>.
           </p>
         </div>
 
         {/* Certificate Card */}
         {renderCertificateCard()}
 
-        <div className="pt-4">
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <button
+            onClick={() => window.print()}
+            className="min-h-[56px] px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-base shadow-lg shadow-amber-200 flex items-center gap-2.5 cursor-pointer active:scale-95 transition-all"
+          >
+            <Printer className="w-5 h-5" />
+            <span>🖨️ In / Lưu Giấy Khen (Print Certificate)</span>
+          </button>
+
           <button
             onClick={onTryAgainYes}
-            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm shadow-lg shadow-purple-200 flex items-center gap-2 mx-auto cursor-pointer active:scale-95 transition-all"
+            className="min-h-[56px] px-7 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-base shadow-lg shadow-purple-200 flex items-center gap-2.5 cursor-pointer active:scale-95 transition-all"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span>Practice Another Speaking Take</span>
+            <RotateCcw className="w-5 h-5" />
+            <span>🔄 Luyện Nói Thêm Lần Nữa (Practice Again)</span>
           </button>
         </div>
       </div>
@@ -428,88 +442,90 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
     evaluation;
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-4xl mx-auto pb-8">
+    <div className="space-y-6 animate-fade-in max-w-4xl mx-auto pb-8 font-['Nunito','Baloo_2',sans-serif]">
+      {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
+
       {/* Title Header */}
-      <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-rose-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 rounded-3xl p-6 sm:p-7 text-white shadow-xl shadow-rose-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="inline-block px-3 py-1 rounded-xl bg-white/20 text-white text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
-            SECTION 6
+          <span className="inline-block px-3.5 py-1 rounded-xl bg-white/25 text-white text-xs sm:text-sm font-black uppercase tracking-wider mb-2 backdrop-blur-xs">
+            STEP 6 • BƯỚC 6
           </span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-heading tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-heading tracking-tight flex items-center gap-2.5">
             <span>⭐</span>
-            <span>AI FEEDBACK</span>
+            <span>Celebration & Feedback (Thư Khen & Đánh Giá)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-amber-100 font-semibold mt-1 max-w-xl">
-            Supportive, confidence-building coaching based strictly on your speaking presentation!
+          <p className="text-sm sm:text-base md:text-lg text-amber-100 font-bold mt-1.5 max-w-2xl leading-relaxed">
+            Chúc mừng em đã hoàn thành bài nói! Cùng xem những điểm sáng và lời khuyên để tiến bộ nhé! ⭐
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-xs px-4 py-2 rounded-2xl border border-white/30 text-white font-extrabold text-xs">
-          <Star className="w-4 h-4 text-amber-300 fill-amber-300" />
-          <span>Growth & Confidence</span>
+        <div className="flex items-center gap-2 bg-white/25 backdrop-blur-xs px-5 py-3 rounded-2xl border-2 border-white/30 text-white font-black text-sm sm:text-base shrink-0">
+          <Star className="w-5 h-5 text-amber-300 fill-amber-300" />
+          <span>Tự Tin & Tiến Bộ ⭐</span>
         </div>
       </div>
 
       {/* 5 Evaluated Areas (NO NUMERICAL SCORES, NO RANKINGS) */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-amber-200 shadow-md space-y-4">
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-3 border-amber-200 shadow-lg shadow-amber-100/50 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base sm:text-lg font-black text-slate-800 font-heading flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-600" />
-            <span>Speaking Rubric Evaluation</span>
+          <h3 className="text-lg sm:text-xl font-black text-slate-900 font-heading flex items-center gap-2">
+            <Award className="w-6 h-6 text-amber-600" />
+            <span>Đánh Giá 5 Tiêu Chí Nói Tiếng Anh (Speaking Rubric)</span>
           </h3>
-          <span className="text-xs text-slate-500 font-semibold">
-            5 Core Areas of Communication
+          <span className="text-xs sm:text-sm text-slate-500 font-bold hidden sm:inline">
+            5 Tiêu chí giao tiếp chuẩn Bộ GD&ĐT
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
           {/* 1. Pronunciation */}
-          <div className="bg-pink-50/60 border border-pink-200 rounded-2xl p-3.5 space-y-1">
-            <span className="text-xs font-black uppercase text-pink-700 block">
-              1. Pronunciation
+          <div className="bg-pink-50/70 border-2 border-pink-200 rounded-2xl p-4 space-y-1.5 shadow-2xs">
+            <span className="text-xs sm:text-sm font-black uppercase text-pink-800 block">
+              🗣️ 1. Pronunciation (Phát âm)
             </span>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              {rubricFeedback?.pronunciation || 'Clear sounds and friendly intonation.'}
+            <p className="text-sm sm:text-base text-slate-800 font-bold leading-relaxed">
+              {rubricFeedback?.pronunciation || 'Phát âm to, rõ ràng và có ngữ điệu tự nhiên.'}
             </p>
           </div>
 
           {/* 2. Fluency */}
-          <div className="bg-purple-50/60 border border-purple-200 rounded-2xl p-3.5 space-y-1">
-            <span className="text-xs font-black uppercase text-purple-700 block">
-              2. Fluency
+          <div className="bg-purple-50/70 border-2 border-purple-200 rounded-2xl p-4 space-y-1.5 shadow-2xs">
+            <span className="text-xs sm:text-sm font-black uppercase text-purple-800 block">
+              🌊 2. Fluency (Lưu loát)
             </span>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              {rubricFeedback?.fluency || 'Continuous speaking pace with natural phrasing.'}
+            <p className="text-sm sm:text-base text-slate-800 font-bold leading-relaxed">
+              {rubricFeedback?.fluency || 'Tốc độ nói đều đặn, ngắt nghỉ câu tự nhiên.'}
             </p>
           </div>
 
           {/* 3. Vocabulary */}
-          <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-3.5 space-y-1">
-            <span className="text-xs font-black uppercase text-emerald-700 block">
-              3. Vocabulary
+          <div className="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-4 space-y-1.5 shadow-2xs">
+            <span className="text-xs sm:text-sm font-black uppercase text-emerald-800 block">
+              📚 3. Vocabulary (Từ vựng)
             </span>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              {rubricFeedback?.vocabulary || 'Accurate words used from the teacher mindmap.'}
+            <p className="text-sm sm:text-base text-slate-800 font-bold leading-relaxed">
+              {rubricFeedback?.vocabulary || 'Sử dụng chính xác các từ vựng từ sơ đồ tư duy mindmap.'}
             </p>
           </div>
 
           {/* 4. Grammar */}
-          <div className="bg-sky-50/60 border border-sky-200 rounded-2xl p-3.5 space-y-1">
-            <span className="text-xs font-black uppercase text-sky-700 block">
-              4. Grammar
+          <div className="bg-sky-50/70 border-2 border-sky-200 rounded-2xl p-4 space-y-1.5 shadow-2xs">
+            <span className="text-xs sm:text-sm font-black uppercase text-sky-800 block">
+              ✏️ 4. Grammar (Ngữ pháp)
             </span>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              {rubricFeedback?.grammar || 'Clear sentence patterns suitable for Grade 5.'}
+            <p className="text-sm sm:text-base text-slate-800 font-bold leading-relaxed">
+              {rubricFeedback?.grammar || 'Mẫu câu đơn giản, chính xác phù hợp học sinh Lớp 5.'}
             </p>
           </div>
 
           {/* 5. Content Development */}
-          <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-3.5 space-y-1 sm:col-span-2 md:col-span-2">
-            <span className="text-xs font-black uppercase text-amber-800 block">
-              5. Content Development
+          <div className="bg-amber-50/70 border-2 border-amber-200 rounded-2xl p-4 space-y-1.5 sm:col-span-2 md:col-span-2 shadow-2xs">
+            <span className="text-xs sm:text-sm font-black uppercase text-amber-900 block">
+              💡 5. Content Development (Phát triển ý)
             </span>
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-              {rubricFeedback?.contentDevelopment || 'Connected key ideas from the mindmap branches and added personal thoughts.'}
+            <p className="text-sm sm:text-base text-slate-800 font-bold leading-relaxed">
+              {rubricFeedback?.contentDevelopment || 'Liên kết tốt các ý tưởng từ bài học và thể hiện cảm xúc cá nhân.'}
             </p>
           </div>
         </div>
@@ -683,14 +699,14 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
           </div>
         ) : (
           <form onSubmit={handleSubmitToTeacher} className="space-y-4">
-            <p className="text-xs sm:text-sm text-slate-600 font-semibold">
-              Em hãy điền họ tên, lớp và chọn giáo viên phụ trách để nộp bài ghi âm và bài nói hoàn chỉnh cho thầy cô giáo nhé:
+            <p className="text-sm sm:text-base text-slate-700 font-bold">
+              Em hãy điền họ tên, lớp và chọn giáo viên phụ trách để nộp bài ghi âm và kết quả cho thầy cô nhé:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                  <User className="w-3.5 h-3.5 text-purple-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <User className="w-4 h-4 text-purple-600" />
                   <span>Họ và tên của em (*)</span>
                 </label>
                 <input
@@ -699,19 +715,19 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   placeholder="Ví dụ: Nguyễn Hoàng Nam"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-4 py-3 bg-white border-2 border-purple-200 rounded-2xl text-sm sm:text-base font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-                  <span className="flex items-center gap-1">
-                    <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-black text-slate-800 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <GraduationCap className="w-4 h-4 text-purple-600" />
                     <span>Lớp của em</span>
                   </span>
-                  <span className="text-[10px] text-slate-400">Chọn nhanh:</span>
+                  <span className="text-[11px] text-slate-400 font-bold">Chọn nhanh:</span>
                 </label>
-                <div className="flex gap-1 mb-1">
+                <div className="flex gap-1.5 mb-1">
                   {['5/1', '5/3'].map((c) => (
                     <button
                       key={c}
@@ -721,7 +737,7 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                         if (c === '5/1') setSubmissionTeacher('Ms. Hồng Phượng');
                         if (c === '5/3') setSubmissionTeacher('Ms. Thanh Thảo');
                       }}
-                      className={`flex-1 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${
+                      className={`flex-1 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
                         studentClass === c
                           ? 'bg-purple-600 text-white border-purple-600 shadow-2xs'
                           : 'bg-white text-slate-700 border-slate-300 hover:border-purple-300'
@@ -736,13 +752,13 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   placeholder="Ví dụ: 5/1 hoặc 5/3"
                   value={studentClass}
                   onChange={(e) => setStudentClass(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-4 py-3 bg-white border-2 border-purple-200 rounded-2xl text-sm sm:text-base font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                  <Award className="w-3.5 h-3.5 text-purple-600" />
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-purple-600" />
                   <span>Giáo viên phụ trách</span>
                 </label>
                 <select
@@ -753,15 +769,15 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                     if (t === 'Ms. Hồng Phượng') setStudentClass('5/1');
                     if (t === 'Ms. Thanh Thảo') setStudentClass('5/3');
                   }}
-                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs cursor-pointer"
+                  className="w-full px-4 py-3 bg-white border-2 border-purple-200 rounded-2xl text-sm sm:text-base font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs cursor-pointer"
                 >
                   <option value="Ms. Hồng Phượng">Ms. Hồng Phượng (Lớp 5/1)</option>
                   <option value="Ms. Thanh Thảo">Ms. Thanh Thảo (Lớp 5/3)</option>
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
                   <span>🏫 Trường Tiểu học</span>
                 </label>
                 <input
@@ -769,29 +785,29 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
                   placeholder="Ví dụ: Tiểu học Kim Đồng"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
+                  className="w-full px-4 py-3 bg-white border-2 border-purple-200 rounded-2xl text-sm sm:text-base font-bold text-slate-800 outline-none focus:border-purple-600 shadow-xs"
                 />
               </div>
             </div>
 
             {submitError && (
-              <p className="text-xs text-rose-600 font-bold bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+              <p className="text-xs sm:text-sm text-rose-600 font-bold bg-rose-50 p-3 rounded-2xl border border-rose-200">
                 ⚠️ {submitError}
               </p>
             )}
 
-            <div className="flex items-center justify-between flex-wrap gap-3 pt-1">
-              <div className="text-xs text-slate-500 font-semibold">
-                Bài nộp gồm: Bản ghi âm ({durationSeconds}s) + Lời bài nói + Đánh giá 5 tiêu chí.
+            <div className="flex items-center justify-between flex-wrap gap-3 pt-2">
+              <div className="text-xs sm:text-sm text-slate-600 font-bold">
+                📋 Bài nộp gồm: Bản ghi âm ({durationSeconds}s) + Lời bài nói + Đánh giá 5 tiêu chí.
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-purple-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
+                className="w-full sm:w-auto min-h-[56px] px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-base sm:text-lg shadow-lg shadow-purple-200 flex items-center justify-center gap-3 cursor-pointer active:scale-95 transition-all"
               >
-                <Send className="w-4 h-4" />
-                <span>{isSubmitting ? 'Đang Nộp Bài...' : '🚀 Gửi Bài Nói Cho Thầy Cô'}</span>
+                <Send className="w-5 h-5" />
+                <span>{isSubmitting ? 'Đang Nộp Bài...' : '🚀 Gửi Bài Cho Thầy Cô (Submit)'}</span>
               </button>
             </div>
           </form>
@@ -799,41 +815,53 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
       </div>
 
       {/* CERTIFICATE OF ACHIEVEMENT PREVIEW & TEACHER DATE SETTINGS */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-500" />
-            <h3 className="text-base sm:text-lg font-black text-slate-800 font-heading">
-              Giấy Khen Thành Tích (Certificate of Achievement)
-            </h3>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center font-black shadow-sm">
+              <Award className="w-6 h-6 text-amber-900" />
+            </div>
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-800 font-heading">
+                Giấy Khen Thành Tích 🏆
+              </h3>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">
+                Certificate of Achievement • Designed by Ms Hồng Phượng
+              </p>
+            </div>
           </div>
-          <span className="text-xs font-extrabold text-purple-600">
-            Designed by Ms Hồng Phượng
-          </span>
+
+          <button
+            onClick={() => window.print()}
+            className="min-h-[50px] px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm sm:text-base shadow-md shadow-amber-200 flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
+          >
+            <Printer className="w-5 h-5" />
+            <span>🖨️ In / Lưu Giấy Khen (Print)</span>
+          </button>
         </div>
         {renderCertificateCard()}
       </div>
 
       {/* After feedback: Would you like to try again? */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-purple-200 shadow-xl text-center space-y-4">
-        <h3 className="text-lg sm:text-xl font-black text-slate-800 font-heading">
-          Would you like to try again?
+      <div className="bg-gradient-to-br from-amber-50 via-white to-purple-50 rounded-3xl p-6 sm:p-8 border-3 border-purple-200 shadow-xl text-center space-y-4">
+        <h3 className="text-2xl sm:text-3xl font-black text-slate-800 font-heading">
+          🎉 Would you like to try again?
         </h3>
-        <p className="text-xs sm:text-sm text-slate-600 font-medium">
-          You can return to Section 5 to record another take, or finish your lesson today!
+        <p className="text-base sm:text-lg text-slate-600 font-semibold max-w-xl mx-auto">
+          Em có muốn luyện nói lại để đạt kết quả xuất sắc hơn, hay hoàn thành bài học hôm nay?
         </p>
 
-        <div className="flex items-center justify-center gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           {/* YES Button */}
           <button
             onClick={() => {
               sounds.playEncouragementChime();
               onTryAgainYes();
             }}
-            className="flex items-center gap-2 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-200 cursor-pointer active:scale-95 transition-all"
+            className="w-full sm:w-auto min-h-[56px] flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-base sm:text-lg shadow-lg shadow-emerald-200 cursor-pointer active:scale-95 transition-all"
           >
-            <Check className="w-5 h-5" />
-            <span>✅ YES (Try Again)</span>
+            <Check className="w-6 h-6 stroke-[3]" />
+            <span>🔄 YES (Luyện Nói Lại • Try Again)</span>
           </button>
 
           {/* NO Button */}
@@ -842,9 +870,10 @@ export const Section6Feedback: React.FC<Section6FeedbackProps> = ({
               sounds.playCelebrationFanfare();
               onTryAgainNo();
             }}
-            className="flex items-center gap-2 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-sm sm:text-base shadow-lg shadow-purple-200 cursor-pointer active:scale-95 transition-all"
+            className="w-full sm:w-auto min-h-[56px] flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-base sm:text-lg shadow-lg shadow-purple-200 cursor-pointer active:scale-95 transition-all"
           >
-            <span>❌ NO (Finish Lesson)</span>
+            <Award className="w-6 h-6" />
+            <span>⭐ NO (Hoàn Thành Bài • Finish Lesson)</span>
           </button>
         </div>
       </div>
