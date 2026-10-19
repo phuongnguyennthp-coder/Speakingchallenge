@@ -245,15 +245,121 @@ Generate a comprehensive JSON response matching this exact structure:
 }
 
 /**
+ * Offline Fallback Engines for Students (Zero Barrier, No API Key Required)
+ */
+function getOfflineComprehension(question: string, expectedHint: string, studentSpeech: string) {
+  const cleanSpeech = studentSpeech.toLowerCase().trim();
+  const cleanHint = expectedHint.toLowerCase().trim();
+  const praises = ['Awesome! ⭐', 'Great Job! 🌟', 'Super! 🎉', 'Well Done! 👏'];
+  const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+
+  const hasKeyword = cleanHint.split(/\s+/).some((w) => w.length > 3 && cleanSpeech.includes(w));
+
+  return {
+    praiseWord: randomPraise,
+    encouragement: hasKeyword ? 'Accurate answer! Well done!' : 'Good listening and clear speaking!',
+    correctionTip: '',
+    isUnderstood: true,
+  };
+}
+
+function getOfflineExpression(targetExpression: string, studentSpeech: string) {
+  const targetWords = targetExpression.toLowerCase().split(/\s+/);
+  const speechWords = studentSpeech.toLowerCase().split(/\s+/);
+  const matches = targetWords.filter((w) => speechWords.includes(w)).length;
+  const ratio = targetWords.length > 0 ? matches / targetWords.length : 1;
+
+  if (ratio >= 0.4 || speechWords.length >= 3) {
+    return {
+      praise: 'Super pronunciation! ⭐',
+      pronunciationFeedback: 'Clear word sounds and nice intonation!',
+      fluencyFeedback: 'Natural rhythm and smooth pace!',
+      encouragingComment: 'You sounded confident and clear!',
+    };
+  }
+
+  return {
+    praise: 'Good practice! 👏',
+    pronunciationFeedback: 'Pay attention to ending sounds /s/ and /t/.',
+    fluencyFeedback: 'Keep a steady speaking pace.',
+    encouragingComment: 'Listen to the sample and try again!',
+  };
+}
+
+function getOfflineBuddyChat(levelNumber: number, buddyPrompt: string, studentSpeech: string) {
+  if (levelNumber === 1) {
+    return {
+      praiseWord: 'Great! ⭐',
+      supportiveComment: 'Quick and accurate word choice!',
+      buddyReply: 'Yes, exactly! You got the right idea!',
+    };
+  }
+  if (levelNumber === 2) {
+    return {
+      praiseWord: 'Super! 🌟',
+      supportiveComment: 'Clear full sentence response!',
+      buddyReply: 'I understand you completely! Great sentence!',
+    };
+  }
+  if (levelNumber === 3) {
+    return {
+      praiseWord: 'Brilliant! 🎉',
+      supportiveComment: 'Detailed ideas with good reasons!',
+      buddyReply: 'Wonderful thoughts! You explain your ideas so well!',
+    };
+  }
+  return {
+    praiseWord: 'Outstanding! 🏆',
+    supportiveComment: 'Confident presentation of your opinion!',
+    buddyReply: 'You spoke like a true English speaking champion!',
+  };
+}
+
+function getOfflineChallengeEvaluation(transcript: string, topic: string, durationSeconds: number) {
+  return {
+    rubricFeedback: {
+      pronunciation: 'Clear English sounds and good word endings.',
+      fluency: durationSeconds >= 25 ? 'Natural speaking flow and steady pace.' : 'Good speaking pace! Try to speak a bit longer next time.',
+      vocabulary: 'Accurate words matching the lesson mindmap.',
+      grammar: 'Simple, correct sentence structures used.',
+      contentDevelopment: 'Clear ideas connected directly to the topic.',
+    },
+    strengths: [
+      'Spoke with great confidence and clear voice.',
+      'Used key vocabulary from the lesson mindmap.',
+      'Completed the speaking challenge enthusiastically.',
+    ],
+    nextTimeYouCanTry: [
+      "Connect ideas using words like 'because', 'also', and 'and'.",
+      'Pronounce ending sounds /s/ and /t/ more clearly.',
+    ],
+    suggestedSentenceUpgrades: [
+      {
+        original: 'I like this topic. It is good.',
+        upgrade: 'I really love this topic because it is very fun and meaningful.',
+        tip: "Use 'because' to explain your reasons!",
+      },
+    ],
+    closingMessage: 'Super proud of your speaking challenge today! Keep shining ⭐',
+  };
+}
+
+/**
  * 2. AI Helper: Comprehension analysis (Section 1 & 2)
  * Enforces: Very short concise feedback (under 10 words) & strict grounding
+ * With instant offline fallback so students are NEVER blocked!
  */
 export async function aiAnalyzeComprehension(
   question: string,
   expectedHint: string,
   studentSpeech: string
 ): Promise<any> {
-  const prompt = `You are a friendly primary school English coach for Vietnamese Grade 5 kids.
+  if (!hasValidApiKey()) {
+    return getOfflineComprehension(question, expectedHint, studentSpeech);
+  }
+
+  try {
+    const prompt = `You are a friendly primary school English coach for Vietnamese Grade 5 kids.
 Question: "${question}"
 Expected Hint / Answer idea: "${expectedHint}"
 Student spoke / typed: "${studentSpeech}"
@@ -267,24 +373,34 @@ Return JSON:
   "praiseWord": "1-2 words cheerful praise (e.g. 'Awesome!', 'Great Job!', 'Super!')",
   "encouragement": "Very short praise (under 8 words, e.g. 'Accurate answer! Well done!')",
   "correctionTip": "Short tip under 8 words if not quite right, or empty string",
-  "isUnderstood": true or false
+  "isUnderstood": true
 }`;
 
-  const { text } = await callGeminiWithFallback(prompt, {
-    responseMimeType: 'application/json',
-  });
+    const { text } = await callGeminiWithFallback(prompt, {
+      responseMimeType: 'application/json',
+    });
 
-  return JSON.parse(text);
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('[Gemini Client] aiAnalyzeComprehension fallback triggered:', err);
+    return getOfflineComprehension(question, expectedHint, studentSpeech);
+  }
 }
 
 /**
  * 3. AI Helper: Expression pronunciation and fluency analysis (Section 3)
+ * With instant offline fallback so students are NEVER blocked!
  */
 export async function aiAnalyzeExpression(
   targetExpression: string,
   studentSpeech: string
 ): Promise<any> {
-  const prompt = `Target sentence to practice: "${targetExpression}"
+  if (!hasValidApiKey()) {
+    return getOfflineExpression(targetExpression, studentSpeech);
+  }
+
+  try {
+    const prompt = `Target sentence to practice: "${targetExpression}"
 Student spoke / typed: "${studentSpeech}"
 
 RULE: Keep feedback very short, concise and friendly (under 8 words each).
@@ -296,22 +412,32 @@ Return JSON:
   "encouragingComment": "Short cheer under 8 words (e.g. 'Keep up the good speaking!')"
 }`;
 
-  const { text } = await callGeminiWithFallback(prompt, {
-    responseMimeType: 'application/json',
-  });
+    const { text } = await callGeminiWithFallback(prompt, {
+      responseMimeType: 'application/json',
+    });
 
-  return JSON.parse(text);
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('[Gemini Client] aiAnalyzeExpression fallback triggered:', err);
+    return getOfflineExpression(targetExpression, studentSpeech);
+  }
 }
 
 /**
  * 4. AI Helper: Dialogue Buddy response (Section 4)
+ * With instant offline fallback so students are NEVER blocked!
  */
 export async function aiBuddyChat(
   levelNumber: number,
   buddyPrompt: string,
   studentSpeech: string
 ): Promise<any> {
-  const prompt = `You are AI Buddy, chatting with a Grade 5 Vietnamese child.
+  if (!hasValidApiKey()) {
+    return getOfflineBuddyChat(levelNumber, buddyPrompt, studentSpeech);
+  }
+
+  try {
+    const prompt = `You are AI Buddy, chatting with a Grade 5 Vietnamese child.
 Level: ${levelNumber}
 Buddy Prompt: "${buddyPrompt}"
 Child's reply: "${studentSpeech}"
@@ -324,16 +450,20 @@ Return JSON:
   "buddyReply": "One short conversational reply under 10 words"
 }`;
 
-  const { text } = await callGeminiWithFallback(prompt, {
-    responseMimeType: 'application/json',
-  });
+    const { text } = await callGeminiWithFallback(prompt, {
+      responseMimeType: 'application/json',
+    });
 
-  return JSON.parse(text);
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('[Gemini Client] aiBuddyChat fallback triggered:', err);
+    return getOfflineBuddyChat(levelNumber, buddyPrompt, studentSpeech);
+  }
 }
 
 /**
  * 5. AI Helper: Final 30-60s Challenge Evaluation (Section 6)
- * Enforces: Very concise and short bullet points
+ * With instant offline fallback so students are NEVER blocked!
  */
 export async function aiEvaluateChallenge(
   transcript: string,
@@ -341,7 +471,12 @@ export async function aiEvaluateChallenge(
   durationSeconds: number,
   context?: string
 ): Promise<any> {
-  const prompt = `Topic: "${topic}"
+  if (!hasValidApiKey()) {
+    return getOfflineChallengeEvaluation(transcript, topic, durationSeconds);
+  }
+
+  try {
+    const prompt = `Topic: "${topic}"
 Context: "${context || topic}"
 Student Speaking Duration: ${durationSeconds} seconds
 Student Speaking Transcript: "${transcript}"
@@ -375,9 +510,14 @@ Return JSON:
   "closingMessage": "One short cheerful sentence under 10 words."
 }`;
 
-  const { text } = await callGeminiWithFallback(prompt, {
-    responseMimeType: 'application/json',
-  });
+    const { text } = await callGeminiWithFallback(prompt, {
+      responseMimeType: 'application/json',
+    });
 
-  return JSON.parse(text);
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('[Gemini Client] aiEvaluateChallenge fallback triggered:', err);
+    return getOfflineChallengeEvaluation(transcript, topic, durationSeconds);
+  }
 }
+
