@@ -187,18 +187,15 @@ export const HeaderProgress: React.FC<HeaderProgressProps> = ({
               )}
             </button>
 
-            {/* Settings (API Key) Button - ALWAYS visible on Header per AI_INSTRUCTIONS.md */}
-            {onOpenApiKeyModal && (
+            {/* Settings (API Key) Button - ONLY VISIBLE TO TEACHER, NEVER BLOCK OR DISTRACT STUDENTS */}
+            {!isStudentMode && onOpenApiKeyModal && (
               <button
                 onClick={onOpenApiKeyModal}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border-2 border-rose-300 text-rose-700 shadow-xs cursor-pointer active:scale-95 transition-all"
-                title="Cấu hình Gemini API Key & Model AI"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 text-purple-700 shadow-xs cursor-pointer active:scale-95 transition-all"
+                title="Cấu hình Gemini API Key & Model AI (Dành cho Giáo viên)"
               >
-                <Key className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                <span className="text-xs font-black">Settings</span>
-                <span className="text-[11px] font-black text-rose-600 animate-pulse hidden xs:inline">
-                  • Lấy API key để sử dụng app
-                </span>
+                <Key className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                <span className="text-xs font-black">Cài đặt API Key</span>
               </button>
             )}
 
