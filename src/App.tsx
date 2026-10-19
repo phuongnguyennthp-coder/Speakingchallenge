@@ -40,16 +40,16 @@ export default function App() {
   });
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
-  // Auto-check API Key on initial mount per AI_INSTRUCTIONS.md
-  useEffect(() => {
-    if (!hasValidApiKey()) {
-      setIsApiKeyModalOpen(true);
-    }
-  }, []);
-
   // App View Modes: 'dashboard' (Teacher Unit Hub) | 'lesson' (Interactive 6-step player)
   const [viewMode, setViewMode] = useState<'dashboard' | 'lesson'>('lesson');
   const [isStudentMode, setIsStudentMode] = useState<boolean>(true);
+
+  // Auto-check API Key ONLY for teachers when entering teacher mode, NEVER for students!
+  useEffect(() => {
+    if (!isStudentMode && !hasValidApiKey()) {
+      setIsApiKeyModalOpen(true);
+    }
+  }, [isStudentMode]);
 
   // Student Section 5 recording / challenge state
   const [challengeTranscript, setChallengeTranscript] = useState<string>('');
@@ -600,7 +600,7 @@ export default function App() {
           <ApiKeyModal
             isOpen={isApiKeyModalOpen}
             onClose={() => setIsApiKeyModalOpen(false)}
-            isMandatory={!hasValidApiKey()}
+            isMandatory={!isStudentMode && !hasValidApiKey()}
           />
 
           {/* Footer with "Designed by Ms Hồng Phượng" */}
