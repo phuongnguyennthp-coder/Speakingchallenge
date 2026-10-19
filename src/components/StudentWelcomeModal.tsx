@@ -91,15 +91,15 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
 
         {/* Form Body */}
         <div className="p-6 space-y-4">
-          <p className="text-xs text-slate-600 text-center font-semibold">
-            Em hãy nhập tên để AI Buddy gọi tên em và chuẩn bị Thư khen sau khi hoàn thành nhé!
+          <p className="text-sm sm:text-base text-slate-700 text-center font-bold">
+            Em hãy nhập tên để AI Buddy gọi tên em và chuẩn bị Thư Khen sau khi hoàn thành nhé! 🌟
           </p>
 
-          <div className="space-y-3.5">
+          <div className="space-y-4">
             {/* Student Name */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-purple-600" />
+              <label className="block text-xs sm:text-sm font-black text-slate-800 uppercase mb-1.5 flex items-center gap-1.5">
+                <User className="w-4 h-4 text-purple-600" />
                 <span>Họ và tên của em</span>
                 <span className="text-rose-500">*</span>
               </label>
@@ -109,18 +109,18 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ví dụ: Minh Anh / Hoàng Nam"
-                className="w-full text-xs font-bold p-3 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800"
+                className="w-full text-base font-bold p-3.5 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800 shadow-xs"
               />
             </div>
 
             {/* Teacher Selection: Ms. Hồng Phượng (Lớp 5/1) or Ms. Thanh Thảo (Lớp 5/3) */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 text-purple-600" />
+              <label className="block text-xs sm:text-sm font-black text-slate-800 uppercase mb-1.5 flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-purple-600" />
                 <span>Giáo viên phụ trách</span>
                 <span className="text-rose-500">*</span>
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 {[
                   { id: 'Ms. Hồng Phượng', label: 'Ms. Hồng Phượng', classDesc: 'Lớp 5/1' },
                   { id: 'Ms. Thanh Thảo', label: 'Ms. Thanh Thảo', classDesc: 'Lớp 5/3' },
@@ -136,14 +136,14 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
                         setStudentClass('5/3');
                       }
                     }}
-                    className={`py-2 px-2.5 rounded-2xl text-xs font-black transition-all border-2 cursor-pointer text-center flex flex-col items-center justify-center ${
+                    className={`py-3 px-3 rounded-2xl text-sm font-black transition-all border-2 cursor-pointer text-center flex flex-col items-center justify-center ${
                       teacher === t.id
-                        ? 'bg-purple-600 text-white border-purple-600 shadow-md ring-2 ring-purple-200'
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-md ring-2 ring-purple-200 scale-102'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-purple-300'
                     }`}
                   >
                     <span>{t.label}</span>
-                    <span className={`text-[10px] font-bold ${teacher === t.id ? 'text-purple-200' : 'text-purple-600'}`}>
+                    <span className={`text-xs font-bold ${teacher === t.id ? 'text-purple-200' : 'text-purple-600'}`}>
                       {t.classDesc}
                     </span>
                   </button>
@@ -153,12 +153,12 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
 
             {/* Class */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1 flex items-center justify-between">
-                <span className="flex items-center gap-1">
-                  <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
+              <label className="block text-xs sm:text-sm font-black text-slate-800 uppercase mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <GraduationCap className="w-4 h-4 text-purple-600" />
                   <span>Lớp của em</span>
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">Chọn nhanh:</span>
+                <span className="text-[11px] font-bold text-slate-400">Chọn nhanh:</span>
               </label>
               <div className="flex gap-2 mb-2">
                 {['5/1', '5/3'].map((c) => (
@@ -170,9 +170,9 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
                       if (c === '5/1') setTeacher('Ms. Hồng Phượng');
                       if (c === '5/3') setTeacher('Ms. Thanh Thảo');
                     }}
-                    className={`flex-1 py-1 px-2 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-black border-2 transition-all cursor-pointer ${
                       studentClass === c
-                        ? 'bg-purple-100 text-purple-800 border-purple-400 shadow-2xs ring-1 ring-purple-300'
+                        ? 'bg-purple-100 text-purple-900 border-purple-500 shadow-xs ring-1 ring-purple-300'
                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-purple-300'
                     }`}
                   >
@@ -185,30 +185,30 @@ export const StudentWelcomeModal: React.FC<StudentWelcomeModalProps> = ({
                 value={studentClass}
                 onChange={(e) => setStudentClass(e.target.value)}
                 placeholder="Ví dụ: 5/1 hoặc 5/3"
-                className="w-full text-xs font-bold p-3 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800"
+                className="w-full text-base font-bold p-3.5 rounded-2xl border-2 border-purple-200 focus:border-purple-600 focus:outline-none bg-slate-50 text-slate-800 shadow-xs"
               />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2.5 pt-2">
             <button
               type="button"
               onClick={() => handleStart(false)}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-sm shadow-lg shadow-purple-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
+              className="w-full min-h-[56px] py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-base shadow-lg shadow-purple-200 flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all"
             >
-              <span>Bắt Đầu Luyện Nói Ngay</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>🚀 Bắt Đầu Luyện Nói (Start Lesson)</span>
+              <ArrowRight className="w-5 h-5" />
             </button>
 
             {onStartDirectChallenge && (
               <button
                 type="button"
                 onClick={() => handleStart(true)}
-                className="w-full py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                className="w-full min-h-[50px] py-3 rounded-2xl bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 text-amber-900 font-black text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all"
               >
-                <Mic className="w-3.5 h-3.5 text-amber-600" />
-                <span>Vào Thẳng Bài Nói (Step 5 Speaking Challenge)</span>
+                <Mic className="w-4 h-4 text-amber-600" />
+                <span>🎤 Vào Thẳng Bài Nói (Step 5 Challenge)</span>
               </button>
             )}
           </div>
